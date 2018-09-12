@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2043
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wait-time-rest", "wait-time-rest.csproj", "{2C9C7C5D-6498-4C76-90D4-DF1AC0DCAD60}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wait-time", "wait-time.csproj", "{2C9C7C5D-6498-4C76-90D4-DF1AC0DCAD60}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
