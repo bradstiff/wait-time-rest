@@ -12,64 +12,16 @@ using WaitTime.Models;
 namespace WaitTime.Controllers
 {
     [Produces("application/json")]
-    [Route("/api/[controller]")]
+    [Route("/api/waitTimes")]
     [ApiController]
-    public class ResortsController : Controller
+    public class WaitTimeController : Controller
     {
         private readonly WaitTimeContext _context;
         private readonly ILogger _logger;
 
-        public ResortsController(WaitTimeContext context, ILogger<ResortsController> logger)
+        public WaitTimeController(WaitTimeContext context, ILogger<WaitTimeController> logger)
         {
             _context = context;
-        }
-
-        [HttpGet]
-        public IEnumerable<ResortModel> GetResorts()
-        {
-            return _context.Resorts
-                .OrderBy(resort => resort.SortOrder)
-                .Select(resort => new ResortModel
-            {
-                ID = resort.ResortID,
-                Name = resort.Name,
-                Slug = resort.Slug,
-                LogoFilename = resort.LogoFilename,
-                LiftCount = resort.Lifts.Count()
-            });
-        }
-
-        [HttpGet("{slug}")]
-        public ActionResult<ResortModel> GetResortBySlug(string slug)
-        {
-            var resort = _context.Resorts.SingleOrDefault(r => r.Slug == slug);
-            if (resort == null)
-            {
-                return NotFound();
-            }
-            var dates = _context.Uplifts
-                .Where(u => u.Lift.ResortID == resort.ResortID)
-                .Select(u => u.LocalDate)
-                .Distinct()
-                .OrderBy(date => date);
-            var model = new ResortModel
-            {
-                ID = resort.ResortID,
-                Name = resort.Name,
-                Slug = resort.Slug,
-                LogoFilename = resort.LogoFilename,
-                TrailMapFilename = resort.TrailMapFilename,
-                Timezone = resort.Timezone,
-                HasWaitTimes = resort.HasWaitTimes,
-                SortOrder = resort.SortOrder,
-                Dates = dates,
-                LiftCount = resort.Lifts.Count()
-            };
-            if (dates.Count() > 0)
-            {
-                model.LastDate = _getWaitTimeDate(resort.ResortID, dates.Last());
-            }
-            return model;
         }
 
         [HttpGet("{resortSlug}/{date}")]
@@ -80,7 +32,7 @@ namespace WaitTime.Controllers
             {
                 return NotFound();
             }
-            var waitTimeDate = _getWaitTimeDate(resort.ResortID, date);
+            var waitTimeDate = GetWaitTimeDate(resort.ResortID, date, _context);
             if (waitTimeDate == null)
             {
                 return NotFound();
@@ -88,9 +40,9 @@ namespace WaitTime.Controllers
             return waitTimeDate;
         }
 
-        private WaitTimeDateModel _getWaitTimeDate(int resortID, DateTime date)
+        internal static WaitTimeDateModel GetWaitTimeDate(int resortID, DateTime date, WaitTimeContext context)
         {
-            var uplifts = _context.Uplifts
+            var uplifts = context.Uplifts
                 .Where(uplift => uplift.Lift.ResortID == resortID
                     && uplift.LocalDate == date)
                 .OrderBy(uplift => uplift.LocalDateTime)

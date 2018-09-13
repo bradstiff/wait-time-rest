@@ -31,7 +31,7 @@ export const loadDate = (slug, date, waitTimeDate = null) => async (dispatch, ge
         loadWaitTimeDate(waitTimeDate);
     } else {
         try {
-            const url = `api/resorts/${slug}/${date.format('YYYY-MM-DD')}`;
+            const url = `api/waitTimes/${slug}/${date.format('YYYY-MM-DD')}`;
             const response = await fetch(url);
             if (response.ok) {
                 const waitTimeDate = await response.json();
