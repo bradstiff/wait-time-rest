@@ -1,14 +1,22 @@
-﻿import React, { Component } from 'react';
+﻿import React from 'react';
+import PropTypes from 'prop-types';
 import PinchZoomPan from 'react-responsive-pinch-zoom-pan';
 import ComicBubbles from '../comicbubbles/comicbubbles';
 
-class WaitTimeMap extends Component {
+import { WaitTimeDateShape } from './types';
+
+class WaitTimeMap extends React.Component {
+    static propTypes = {
+        trailMapFilename: PropTypes.string,
+        waitTimeDate: WaitTimeDateShape,
+    };
+
     componentDidMount() {
         this.ensureCanvas();
     }
 
     shouldComponentUpdate(nextProps) {
-        return this.props.resort !== nextProps.resort ||
+        return this.props.trailMapFilename !== nextProps.trailMapFilename ||
             this.props.waitTimeDate !== nextProps.waitTimeDate;
     }
 
@@ -17,19 +25,18 @@ class WaitTimeMap extends Component {
     }
 
     ensureCanvas() {
-        if (!this.props.resort) {
-            // need trail map filename; we will get updated when parent query finishes
+        const { trailMapFilename } = this.props;
+        if (!trailMapFilename) {
             return;
         }
-        const { trailMapFilename } = this.props.resort;
         if (!this.trailMap || this.trailMap.filename !== trailMapFilename) {
             this.loadTrailMap(trailMapFilename);
         } else if (this.canvas.width && this.canvas.height) {
-            this.drawCanvas();
+            this.drawCanvas(trailMapFilename);
         }
     }
 
-    loadTrailMap = (trailMapFilename) => {
+    loadTrailMap(trailMapFilename) {
         const src = `${process.env.PUBLIC_URL}/trailmaps/${trailMapFilename}`;
         const image = new Image();
         this.trailMap = {
@@ -49,20 +56,21 @@ class WaitTimeMap extends Component {
         }.bind(this);
     }
 
-    drawCanvas = () => {
+    drawCanvas(trailMapFilename) {
         const context = this.canvas.getContext('2d');
         context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         context.drawImage(this.trailMap.image, 0, 0);
 
-        const { timePeriods, selectedTimestamp } = this.props.waitTimeDate || {};
-        if (timePeriods && timePeriods.length && selectedTimestamp) {
-            this.drawBubbles();
-        }
+        this.tryDrawBubbles(trailMapFilename);
     }
 
-    drawBubbles = () => {
-        const bubbleDefinitions = getBubbleDefinitions(this.props.resort.id);
-        const { timePeriods, selectedTimestamp } = this.props.waitTimeDate;
+    tryDrawBubbles(trailMapFilename) {
+        const { timePeriods, selectedTimestamp } = this.props.waitTimeDate || {};
+        if (!timePeriods || timePeriods.length === 0 || !selectedTimestamp) {
+            return;
+        }
+
+        const bubbleDefinitions = getBubbleDefinitions(trailMapFilename);
         const waitTimes = timePeriods.find(timePeriod => timePeriod.timestamp === selectedTimestamp).waitTimes;
         const bubbles = waitTimes.reduce((result, { liftID, seconds }) => {
                 const bubble = bubbleDefinitions.find(({ id }) => id === liftID.toString());
@@ -110,9 +118,10 @@ class WaitTimeMap extends Component {
 
 export default WaitTimeMap;
 
-const getBubbleDefinitions = (resortID) => {
-    switch (resortID) {
-        case 1:
+const getBubbleDefinitions = trailMapFilename => {
+    // todo: move to DB
+    switch (trailMapFilename) {
+        case 'steamboat.png':
             return [
                 { id: '47356', tag: 'Bar', x: 335, y: 231, tailLocation: 'n', tailX: 355, tailY: 276 },
                 { id: '47355', tag: 'Elk', x: 987, y: 336, tailLocation: 'n', tailX: 973, tailY: 380 },
@@ -133,7 +142,7 @@ const getBubbleDefinitions = (resortID) => {
             return [
                 { id: '47352', tag: 'morn', x: 312, y: 316, tailLocation: 'n', tailX: 332, tailY: 361 },
             ];
-        case 2:
+        case 'winter-park.png':
             return [
                 { id: '55569', tag: 'Gemi', x: 532, y: 934, tailLocation: 'n', tailX: 514, tailY: 974 },
                 { id: '55570', tag: 'Ende', x: 698, y: 916, tailLocation: 'n', tailX: 679, tailY: 946 },
@@ -153,7 +162,7 @@ const getBubbleDefinitions = (resortID) => {
                 { id: '55571', tag: 'Pony', x: 433, y: 779, tailLocation: 's', tailX: 483, tailY: 748 },
                 { id: '42108', tag: 'Iron', x: 521, y: 729, tailLocation: 'n', tailX: 494, tailY: 754 },
             ];
-        case 13:
+        case 'serre-chevalier-vallee.png':
             return [
                 { id: '42505', tag: "RoB", x: 488, y: 454, tailLocation: 'se', tailX: 521, tailY: 505 },
                 { id: '57937', tag: "CrN", x: 507, y: 538, tailLocation: 'n', tailX: 524, tailY: 514 },

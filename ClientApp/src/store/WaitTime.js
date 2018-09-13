@@ -1,6 +1,4 @@
-﻿import moment from 'moment';
-
-const loadDateRequestType = 'LOAD_DATE';
+﻿const loadDateRequestType = 'LOAD_DATE';
 const loadDateSuccessType = 'LOAD_DATE_SUCCESS';
 const loadDateErrorType = 'LOAD_DATE_ERROR';
 

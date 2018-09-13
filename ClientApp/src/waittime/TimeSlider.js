@@ -1,11 +1,13 @@
-﻿import React, { Component } from 'react';
+﻿import React from 'react';
+import PropTypes from 'prop-types';
 import Slider from 'rc-slider';
 import moment from 'moment';
-
 import { compose } from 'redux';
 import withWidth from '@material-ui/core/withWidth';
 
 import 'rc-slider/assets/index.css';
+
+import { WaitTimeDateShape } from './types';
 
 const handleStyle = {
     borderColor: '#D44126',
@@ -15,7 +17,12 @@ const containerStyle = {
     overflow: 'hidden',
 };
 
-class TimeSlider extends Component {
+class TimeSlider extends React.PureComponent {
+    static propTypes = {
+        waitTimeDate: WaitTimeDateShape,
+        onSelectTimePeriod: PropTypes.func,
+    };
+
     render() {
         const { waitTimeDate, onSelectTimePeriod } = this.props;
         if (!waitTimeDate) {
@@ -67,12 +74,6 @@ class TimeSlider extends Component {
     }
 }
 
-const selectTimePeriodMutation = `
-    mutation SelectTimePeriod($waitTimeDateID: String!, $timestamp: Int!) {
-        selectTimePeriod(waitTimeDateID: $waitTimeDateID, timestamp: $timestamp) @client
-    }
-`;
-
 export default compose(
-    withWidth(),
+    withWidth(), //force re-render on resize
 )(TimeSlider);

@@ -1,11 +1,28 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import moment from 'moment';
 
 import { loadDate, selectTimePeriod } from '../store/WaitTime';
+
+import { ResortShape, WaitTimeDateShape } from './types';
 import WaitTimeMap from './WaitTimeMap';
 import TimeSlider from './TimeSlider';
 
+const timeSliderContainerStyle = {
+    minHeight: 40,
+};
+
 class WaitTimeView extends React.Component {
+    static propTypes = {
+        slug: PropTypes.string.isRequired,
+        searchDate: PropTypes.object,
+        resort: ResortShape.isRequired,
+        waitTimeDate: WaitTimeDateShape,
+        loadDate: PropTypes.func.isRequired,
+        selectTimePeriod: PropTypes.func.isRequired,
+    }
+
     componentDidMount() {
         this.checkLoadData();
     }
@@ -15,40 +32,46 @@ class WaitTimeView extends React.Component {
     }
 
     checkLoadData() {
-        const { resortSlug, searchDate, waitTimeDate, loadDate } = this.props;
+        const { slug, searchDate, waitTimeDate, loadDate } = this.props;
         if (searchDate && !waitTimeDate) {
-            loadDate(resortSlug, searchDate);
+            loadDate(slug, searchDate);
         }
     }
 
     handleSelectTimePeriod = timestamp => {
-        const { resortSlug, waitTimeDate: { date }, selectTimePeriod } = this.props;
-        selectTimePeriod(resortSlug, date, timestamp);
+        const { slug, waitTimeDate: { date }, selectTimePeriod } = this.props;
+        selectTimePeriod(slug, date, timestamp);
     }
 
     render() {
-        const { resortSlug, searchDate, resort, waitTimeDate } = this.props;
+        const { slug, searchDate, resort, waitTimeDate } = this.props;
         if (waitTimeDate && waitTimeDate.error) {
-            throw new Error(`Error loading ${resortSlug}:${searchDate || '(last)'}: ${waitTimeDate.error} (${waitTimeDate.code})`);
+            throw new Error(`Error loading ${slug}:${searchDate || '(last)'}: ${waitTimeDate.error} (${waitTimeDate.code})`);
         }
         return (
             <main>
-                <div style={{ minHeight: '40px' }}>
+                <div style={timeSliderContainerStyle}>
                     <TimeSlider waitTimeDate={waitTimeDate} onSelectTimePeriod={this.handleSelectTimePeriod} />
                 </div>
-                <WaitTimeMap resort={resort} waitTimeDate={waitTimeDate} />
+                <WaitTimeMap trailMapFilename={resort.trailMapFilename} waitTimeDate={waitTimeDate} />
             </main>
         );
     };
 }
 
 const mapStateToProps = (state, ownProps) => {
-    const { searchDate, resort, resortSlug } = ownProps;
+    const { searchDate, resort, slug } = ownProps;
+    const waitTimes = state.waitTimes[slug] || [];
     //use search date if specified, else use the last date for the resort
-    const date = searchDate || (resort && resort.lastDate && resort.lastDate.date);
+    const date = searchDate ||
+        (resort.lastDate
+            ? moment(resort.lastDate.date)
+            : null);
     const waitTimeDate = date
-        ? (state.waitTimes[resortSlug] || []).find(waitTimeDate => waitTimeDate.date.isSame(date))
-        : { loading: true }; 
+        ? waitTimes.find(waitTimeDate => waitTimeDate.date.isSame(date))
+        : {
+            loading: true
+        }; 
     return { waitTimeDate };
 };
 

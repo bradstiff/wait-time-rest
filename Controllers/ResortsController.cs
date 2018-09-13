@@ -27,7 +27,9 @@ namespace WaitTime.Controllers
         [HttpGet]
         public IEnumerable<ResortModel> GetResorts()
         {
-            return _context.Resorts.Select(resort => new ResortModel
+            return _context.Resorts
+                .OrderBy(resort => resort.SortOrder)
+                .Select(resort => new ResortModel
             {
                 ID = resort.ResortID,
                 Name = resort.Name,
@@ -120,36 +122,36 @@ namespace WaitTime.Controllers
             {
                 Date = date,
                 TimePeriods = Enumerable
-                .Range(upliftsByTimePeriod.First().Key, upliftsByTimePeriod.Last().Key - upliftsByTimePeriod.First().Key + 1)
-                .Select(timePeriod =>
-                {
-                    var upliftsResult = cumulativeUplifts != null ?
-                        new List<WaitTimeModel>(cumulativeUplifts) :
-                        new List<WaitTimeModel>();
+                    .Range(upliftsByTimePeriod.First().Key, upliftsByTimePeriod.Last().Key - upliftsByTimePeriod.First().Key + 1)
+                    .Select(timePeriod =>
+                    {
+                        var upliftsResult = cumulativeUplifts != null ?
+                            new List<WaitTimeModel>(cumulativeUplifts) :
+                            new List<WaitTimeModel>();
 
-                    upliftsByTimePeriod.FirstOrDefault(t => t.Key == timePeriod)?.ToList().ForEach(uplift =>
-                    {
-                        var existingUplift = upliftsResult.FirstOrDefault(w => w.LiftID == uplift.LiftID);
-                        if (existingUplift != null)
+                        upliftsByTimePeriod.FirstOrDefault(t => t.Key == timePeriod)?.ToList().ForEach(uplift =>
                         {
-                            existingUplift.Seconds = (int)uplift.WaitSeconds;
-                        }
-                        else
-                        {
-                            upliftsResult.Add(new WaitTimeModel
+                            var existingUplift = upliftsResult.FirstOrDefault(w => w.LiftID == uplift.LiftID);
+                            if (existingUplift != null)
                             {
-                                LiftID = uplift.LiftID,
-                                Seconds = (int)uplift.WaitSeconds
-                            });
-                        }
-                    });
-                    cumulativeUplifts = upliftsResult;
-                    return new WaitTimePeriodModel
-                    {
-                        Timestamp = timePeriod * 15 * 60,
-                        WaitTimes = upliftsResult
-                    };
-                })
+                                existingUplift.Seconds = (int)uplift.WaitSeconds;
+                            }
+                            else
+                            {
+                                upliftsResult.Add(new WaitTimeModel
+                                {
+                                    LiftID = uplift.LiftID,
+                                    Seconds = (int)uplift.WaitSeconds
+                                });
+                            }
+                        });
+                        cumulativeUplifts = upliftsResult;
+                        return new WaitTimePeriodModel
+                        {
+                            Timestamp = timePeriod * 15 * 60,
+                            WaitTimes = upliftsResult
+                        };
+                    })
             };
         }
     }

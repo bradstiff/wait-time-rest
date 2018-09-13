@@ -1,4 +1,5 @@
-﻿import React, { Component } from 'react';
+﻿import React from 'react';
+import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 import { compose } from 'redux';
@@ -43,7 +44,14 @@ const styles = theme => ({
     },
 });
 
-class WaitTimeNav extends Component {
+class WaitTimeNav extends React.PureComponent {
+    static propTypes = {
+        slug: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        dates: PropTypes.arrayOf(PropTypes.object),
+        date: PropTypes.object,
+    }
+
     state = {
         showMenu: false,
     }
@@ -56,14 +64,14 @@ class WaitTimeNav extends Component {
 
     handleSelectDate = date => {
         const locationProps = {
-            slug: this.props.resort.slug,
+            slug: this.props.slug,
             date: date.format('YYYY-MM-DD'),
         };
         this.props.history.push(Locations.WaitTime.toUrl(locationProps));
     }
 
     render() {
-        const { resort, date, classes, width } = this.props;
+        const { name, dates, date, classes, width } = this.props;
         const dateDisplayFormat = isWidthUp('sm', width)
             ? 'dddd, LL'
             : 'ddd, ll';
@@ -82,10 +90,10 @@ class WaitTimeNav extends Component {
                         >
                             <MenuIcon />
                         </IconButton>
-                        <ResortName>{(resort && resort.name) || 'Loading'} Wait Times</ResortName>
+                        <ResortName>{name} Wait Times</ResortName>
                         <Hidden smDown>
                             <DateNav
-                                dates={resort && resort.dates}
+                                dates={dates}
                                 date={date}
                                 displayFormat={dateDisplayFormat}
                                 style={dateNavStyle}
@@ -96,7 +104,7 @@ class WaitTimeNav extends Component {
                 </AppBar>
                 <Hidden mdUp>
                     <DateNav
-                        dates={resort && resort.dates}
+                        dates={dates}
                         date={date}
                         displayFormat={dateDisplayFormat}
                         style={dateNavStyle}

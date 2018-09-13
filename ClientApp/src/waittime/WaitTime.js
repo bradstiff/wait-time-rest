@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import moment from 'moment';
 
 import { loadResort } from '../store/Resort';
+import { ResortShape } from './types';
 
 import UserErrorMessage from '../common/UserErrorMessage';
 import WaitTimeNav from './WaitTimeNav';
@@ -34,7 +35,8 @@ class WaitTime extends React.Component {
     static propTypes = {
         slug: PropTypes.string.isRequired,
         date: PropTypes.string,
-        resort: PropTypes.object,
+        resort: ResortShape,
+        loadResort: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -54,7 +56,11 @@ class WaitTime extends React.Component {
 
     render() {
         const { slug, date: searchDateString, resort } = this.props;
-        if (resort && resort.error) {
+        if (!resort) {
+            return null;
+        }
+
+        if (resort.error) {
             if (resort.code === 404) {
                 return <ResortNotFound />;
             } else {
@@ -64,23 +70,20 @@ class WaitTime extends React.Component {
 
         const searchDate = searchDateString ? moment(searchDateString) : null;
         const date = searchDate ||
-            (resort && resort.lastDate
+            (resort.lastDate
                 ? moment(resort.lastDate.date)
                 : null);
 
-        const userErrorMessage = !resort || resort.loading
-            ? null //loading
-            : !resort.dates.length
-                ? { text: 'No wait time data exists for the selected resort. Please select either Serre Chevalier Vallee, Steamboat or Winter Park.', severity: 2 }
-                : searchDate && !resort.dates.find(date => date.isSame(searchDate))
-                    ? { text: 'No wait time data exists for the selected date. Please select a date from the calendar.', severity: 2 }
-                    : null;
+        const userErrorMessage = resort.loading ? null 
+            : !resort.dates.length ? { text: 'No wait time data exists for the selected resort. Please select either Serre Chevalier Vallee, Steamboat or Winter Park.', severity: 2 }
+            : searchDate && !resort.dates.find(date => date.isSame(searchDate)) ? { text: 'No wait time data exists for the selected date. Please select a date from the calendar.', severity: 2 }
+            : null;
 
         return (
             <Flex>
-                <WaitTimeNav resortSlug={slug} resort={resort} date={date} />
+                <WaitTimeNav slug={slug} name={resort.name || 'Loading'} dates={resort.dates} date={date} />
                 {!userErrorMessage
-                    ? <WaitTimeView resortSlug={slug} resort={resort} searchDate={searchDate} />
+                    ? <WaitTimeView slug={slug} resort={resort} searchDate={searchDate} />
                     : <UserErrorMessage message={userErrorMessage} />
                 }
             </Flex>

@@ -51,6 +51,13 @@ const Background = styled.div`
     background-attachment: fixed;
 `;
 
+const redirectToWaitTimeSite = () => {
+    // Admin panel has been split off into a separate site.
+    // Redirect from http://waittime.xovation.com/admin to the following:
+    window.location.replace('http://admin.waittime.xovation.com/resorts');
+    return null;
+};
+
 export default () => (
     <CssBaseline>
         <MuiThemeProvider theme={theme}>
@@ -58,8 +65,9 @@ export default () => (
                 <ErrorBoundary component={ErrorPage}>
                     <BrowserRouter>
                         <Switch>
-                            {Locations.WaitTime.toRoute({ component: WaitTime, invalid: NotFound }, true)}
+                            <Route path='/admin' component={redirectToWaitTimeSite} />
                             <Redirect from='/' to={Locations.WaitTime.toUrl({ slug: 'serre-chevalier-vallee' })} exact />
+                            {Locations.WaitTime.toRoute({ component: WaitTime, invalid: NotFound }, true)}
                             <Route component={NotFound} />
                         </Switch>
                     </BrowserRouter>

@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import moment from 'moment';
+import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import styled from 'styled-components';
 
@@ -43,6 +43,7 @@ const styles = {
         }
     }
 }
+
 const DateNav = ({ dates, date, displayFormat, style, selectDate, classes }) => {
     if (!dates) {
         return null;
@@ -89,6 +90,13 @@ const DateNav = ({ dates, date, displayFormat, style, selectDate, classes }) => 
             </IconButton>
         </FlexContainer>
     );
+};
+
+DateNav.propTypes = {
+    dates: PropTypes.arrayOf(PropTypes.object),
+    date: PropTypes.object,
+    displayFormat: PropTypes.string.isRequired,
+    selectDate: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(DateNav);
