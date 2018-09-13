@@ -16,8 +16,7 @@ RUN npm run build
 FROM build-env as publish
 WORKDIR /app
 COPY . ./
-RUN mkdir ./ClientApp
-COPY --from=client-build /app/build ./ClientApp
+COPY --from=client-build /app/build ./ClientApp/build
 RUN dotnet publish -c Release -o out
 
 # build runtime image
