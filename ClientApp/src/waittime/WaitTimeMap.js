@@ -36,24 +36,26 @@ class WaitTimeMap extends React.Component {
         }
     }
 
+    handleTrailMapLoaded = event => {
+        if (!this.canvas) {
+            // component unmounted before image loaded
+            return;
+        }
+        const trailMap = event.target;
+        this.canvas.width = trailMap.width;
+        this.canvas.height = trailMap.height;
+        this.forceUpdate(); // cause PinchZoomPan to calculate autofit minScale, and invoke ensureCanvas
+    }
+
     loadTrailMap(trailMapFilename) {
-        const src = `${process.env.PUBLIC_URL}/trailmaps/${trailMapFilename}`;
         const image = new Image();
         this.trailMap = {
             filename: trailMapFilename,
             image,
         };
         image.alt = 'Trail Map';
-        image.src = src;
-        image.onload = function() {
-            if (!this.canvas) {
-                // component unmounted before image loaded
-                return;
-            }
-            this.canvas.width = image.width;
-            this.canvas.height = image.height;
-            this.forceUpdate(); // cause PinchZoomPan to calculate autofit minScale, and invoke ensureCanvas
-        }.bind(this);
+        image.src = `${process.env.PUBLIC_URL}/trailmaps/${trailMapFilename}`;
+        image.onload = this.handleTrailMapLoaded;
     }
 
     drawCanvas(trailMapFilename) {

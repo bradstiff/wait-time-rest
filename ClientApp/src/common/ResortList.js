@@ -13,19 +13,6 @@ import { withStyles } from '@material-ui/core/styles';
 
 import { loadResorts } from '../store/Resort';
 
-export const resortsQuery = `
-    query Resorts {
-        resorts { 
-            id,
-            name,
-            slug,
-            logoFilename,
-            hasWaitTimes,
-            lifts { id },
-        }
-    }
-`;
-
 const styles = theme => ({
     logoContainer: {
         textAlign: 'center',
@@ -46,6 +33,25 @@ const styles = theme => ({
 });
 
 class ResortList extends React.Component {
+    static propTypes = {
+        linkTo: PropTypes.func.isRequired,
+        onClick: PropTypes.func,
+        chevron: PropTypes.bool,
+        loadResorts: PropTypes.func.isRequired,
+        resorts: PropTypes.arrayOf(PropTypes.shape({
+            id: PropTypes.number.isRequired,
+            name: PropTypes.string.isRequired,
+            logoFilename: PropTypes.string.isRequired,
+            liftCount: PropTypes.number.isRequired,
+            hasWaitTimes: PropTypes.bool.isRequired,
+        })),
+    };
+
+    static defaultProps = {
+        //display right-aligned chevron (>)
+        chevron: false,
+    };
+
     componentDidMount() {
         const { loadResorts } = this.props;
         loadResorts();
@@ -80,17 +86,6 @@ class ResortList extends React.Component {
             </List>
         );
     }
-};
-
-ResortList.propTypes = {
-    linkTo: PropTypes.func.isRequired,
-    onClick: PropTypes.func,
-    chevron: PropTypes.bool,
-};
-
-ResortList.defaultProps = {
-    //display right-aligned chevron (>)
-    chevron: false,
 };
 
 const mapStateToProps = state => ({
