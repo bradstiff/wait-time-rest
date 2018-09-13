@@ -1,5 +1,5 @@
 # wait-time
-View resort trailmap with lift wait times by date and time of day.
+View trailmap with lift wait times by resort, date and time of day.
 ## Tech Stack
 ### Front-end
 * React
