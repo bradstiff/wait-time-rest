@@ -8,6 +8,7 @@ import { loadDate, selectTimePeriod } from '../store/WaitTime';
 import { ResortShape, WaitTimeDateShape } from './types';
 import WaitTimeMap from './WaitTimeMap';
 import TimeSlider from './TimeSlider';
+import UserErrorMessage from '../common/UserErrorMessage';
 
 const timeSliderContainerStyle = {
     minHeight: 40,
@@ -46,8 +47,14 @@ class WaitTimeView extends React.Component {
     render() {
         const { slug, searchDate, resort, waitTimeDate } = this.props;
         if (waitTimeDate && waitTimeDate.error) {
-            throw new Error(`Error loading ${slug}:${searchDate || '(last)'}: ${waitTimeDate.error} (${waitTimeDate.code})`);
+            if (waitTimeDate.code === 404) {
+                return <UserErrorMessage message={{ text: 'No wait time data exists for the selected date. Please select a date from the calendar.', severity: 2 }} />;
+            }
+            else {
+                throw new Error(`Error loading ${slug}:${searchDate || '(last)'}: ${waitTimeDate.error} (${waitTimeDate.code})`);
+            }
         }
+
         return (
             <main>
                 <div style={timeSliderContainerStyle}>

@@ -69,15 +69,16 @@ class WaitTime extends React.Component {
         }
 
         const searchDate = searchDateString ? moment(searchDateString) : null;
+        const userErrorMessage = resort.loading
+            ? null
+            : !resort.hasWaitTimes
+                ? { text: 'No wait time data exists for the selected resort. Please select either Serre Chevalier Vallee, Steamboat or Winter Park.', severity: 2 }
+                : null;
+
         const date = searchDate ||
             (resort.lastDate
                 ? moment(resort.lastDate.date)
                 : null);
-
-        const userErrorMessage = resort.loading ? null 
-            : !resort.hasWaitTimes ? { text: 'No wait time data exists for the selected resort. Please select either Serre Chevalier Vallee, Steamboat or Winter Park.', severity: 2 }
-            : searchDate && !resort.dates.find(date => date.isSame(searchDate)) ? { text: 'No wait time data exists for the selected date. Please select a date from the calendar.', severity: 2 }
-            : null;
 
         return (
             <Flex>
