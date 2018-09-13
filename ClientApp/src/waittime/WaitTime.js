@@ -75,7 +75,7 @@ class WaitTime extends React.Component {
                 : null);
 
         const userErrorMessage = resort.loading ? null 
-            : !resort.dates.length ? { text: 'No wait time data exists for the selected resort. Please select either Serre Chevalier Vallee, Steamboat or Winter Park.', severity: 2 }
+            : !resort.hasWaitTimes ? { text: 'No wait time data exists for the selected resort. Please select either Serre Chevalier Vallee, Steamboat or Winter Park.', severity: 2 }
             : searchDate && !resort.dates.find(date => date.isSame(searchDate)) ? { text: 'No wait time data exists for the selected date. Please select a date from the calendar.', severity: 2 }
             : null;
 
