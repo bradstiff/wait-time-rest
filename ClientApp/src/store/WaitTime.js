@@ -20,7 +20,9 @@ export const loadDate = (slug, date, waitTimeDate = null) => async (dispatch, ge
 
         const { timePeriods } = waitTimeDate;
         if (timePeriods.length) {
-            const middleIndex = Math.round(timePeriods.length / 2);
+            const middleIndex = timePeriods.length > 1
+                ? Math.round(timePeriods.length / 2)
+                : 0;
             const middleTimestamp = timePeriods[middleIndex].timestamp;
             dispatch(selectTimePeriod(slug, date, middleTimestamp));
         }
