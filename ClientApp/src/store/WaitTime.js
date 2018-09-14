@@ -1,4 +1,6 @@
-﻿const loadDateRequestType = 'LOAD_DATE';
+﻿import Rollbar from 'rollbar';
+
+const loadDateRequestType = 'LOAD_DATE';
 const loadDateSuccessType = 'LOAD_DATE_SUCCESS';
 const loadDateErrorType = 'LOAD_DATE_ERROR';
 
@@ -17,14 +19,18 @@ export const loadDate = (slug, date, waitTimeDate = null) => async (dispatch, ge
 
     const loadWaitTimeDate = waitTimeDate => {
         dispatch({ type: loadDateSuccessType, slug, date, waitTimeDate });
-
-        const { timePeriods } = waitTimeDate;
-        if (timePeriods.length) {
-            const middleIndex = timePeriods.length > 1
-                ? Math.round(timePeriods.length / 2)
-                : 0;
-            const middleTimestamp = timePeriods[middleIndex].timestamp;
-            dispatch(selectTimePeriod(slug, date, middleTimestamp));
+        try {
+            const { timePeriods } = waitTimeDate;
+            if (timePeriods.length) {
+                const middleIndex = timePeriods.length > 1
+                    ? Math.round(timePeriods.length / 2)
+                    : 0;
+                const middleTimestamp = timePeriods[middleIndex].timestamp;
+                dispatch(selectTimePeriod(slug, date, middleTimestamp));
+            }
+        }
+        catch (error) {
+            Rollbar.error(error);
         }
     }
 
@@ -33,17 +39,18 @@ export const loadDate = (slug, date, waitTimeDate = null) => async (dispatch, ge
         loadWaitTimeDate(waitTimeDate);
     } else {
         try {
-            const url = `api/waitTimes/${slug}/${date.format('YYYY-MM-DD')}`;
-            const response = await fetch(url);
+            const response = await fetch(`/api/waitTimes/${slug}/${date.format('YYYY-MM-DD')}`);
             if (response.ok) {
                 const waitTimeDate = await response.json();
                 loadWaitTimeDate(waitTimeDate);
             } else {
                 const { status: code, statusText: error } = response;
+                Rollbar.error({ code, error });
                 dispatch({ type: loadDateErrorType, slug, date, code, error });
             }
         }
         catch (error) {
+            Rollbar.error(error);
             dispatch({ type: loadDateErrorType, slug, date, error });
         }
     }
