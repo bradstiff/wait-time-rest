@@ -16,6 +16,7 @@ class WaitTimeMap extends React.PureComponent {
     static getDerivedStateFromProps(nextProps, state) {
         if (state.trailMap && nextProps.trailMapFilename !== state.trailMap.filename) {
             //trigger loading of next trail map
+            this.image = null;
             return {
                 trailMap: null,
             };
@@ -37,6 +38,10 @@ class WaitTimeMap extends React.PureComponent {
         this.tryDrawCanvas();
     }
 
+    componentWillUnmount() {
+        this.image = null;
+    }
+
     checkLoadTrailMap() {
         const { trailMapFilename } = this.props;
         if (!trailMapFilename || this.state.trailMap) {
@@ -44,15 +49,15 @@ class WaitTimeMap extends React.PureComponent {
             return;
         }
 
-        const image = new Image();
-        image.alt = 'Trail Map';
-        image.src = `${process.env.PUBLIC_URL}/trailmaps/${trailMapFilename}`;
-        image.onload = event => this.handleTrailMapLoaded(trailMapFilename, event.target);
+        this.image = new Image();
+        this.image.alt = 'Trail Map';
+        this.image.src = `${process.env.PUBLIC_URL}/trailmaps/${trailMapFilename}`;
+        this.image.onload = event => this.handleTrailMapLoaded(trailMapFilename, event.target);
+
         this.setState({
             trailMap: {
                 filename: trailMapFilename,
                 loaded: false,
-                image,
             }
         });
     }
@@ -83,21 +88,23 @@ class WaitTimeMap extends React.PureComponent {
         if (!this.canvas) {
             return false;
         }
-        const { loaded, image } = this.state.trailMap || {};
-        if (!image || !loaded) {
+        if (!this.image) {
             return false;
         }
-        return image.height
-            && image.width
-            && this.canvas.width === image.width
-            && this.canvas.height === image.height;
+        if (!this.state.trailMap || !this.state.trailMap.loaded) {
+            return false;
+        }
+        return this.image.height
+            && this.image.width
+            && this.canvas.width === this.image.width
+            && this.canvas.height === this.image.height;
     }
 
     tryDrawCanvas() {
         const context = this.canvas.getContext('2d');
         if (this.canvasReady) {
             context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            context.drawImage(this.state.trailMap.image, 0, 0);
+            context.drawImage(this.image, 0, 0);
             this.tryDrawBubbles();
         }
     }
