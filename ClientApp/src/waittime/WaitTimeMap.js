@@ -7,11 +7,6 @@ import ModalCircularProgress from '../common/ModalCircularProgress';
 import { WaitTimeDateShape } from './types';
 import { getBubbleDefinitions } from '../store/liftBubbleDefinitions';
 
-const containerStyle = {
-    width: '100%',
-    height: '100%',
-};
-
 class WaitTimeMap extends React.PureComponent {
     static propTypes = {
         trailMapFilename: PropTypes.string,
@@ -19,7 +14,7 @@ class WaitTimeMap extends React.PureComponent {
     };
 
     static getDerivedStateFromProps(nextProps, state) {
-        if (state.trailMap && nextProps.trailMapFilename != state.trailMap.filename) {
+        if (state.trailMap && nextProps.trailMapFilename !== state.trailMap.filename) {
             //trigger loading of next trail map
             return {
                 trailMap: null,
@@ -89,11 +84,10 @@ class WaitTimeMap extends React.PureComponent {
             return false;
         }
         const { loaded, image } = this.state.trailMap || {};
-        if (!image) {
+        if (!image || !loaded) {
             return false;
         }
-        return loaded
-            && image.height
+        return image.height
             && image.width
             && this.canvas.width === image.width
             && this.canvas.height === image.height;
