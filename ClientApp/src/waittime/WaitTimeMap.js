@@ -5,74 +5,104 @@ import ComicBubbles from '../comicbubbles/comicbubbles';
 
 import { WaitTimeDateShape } from './types';
 
-class WaitTimeMap extends React.Component {
+class WaitTimeMap extends React.PureComponent {
     static propTypes = {
         trailMapFilename: PropTypes.string,
         waitTimeDate: WaitTimeDateShape,
     };
 
-    componentDidMount() {
-        this.ensureCanvas();
+    static getDerivedStateFromProps(nextProps, state) {
+        if (state.trailMap && nextProps.trailMapFilename != state.trailMap.filename) {
+            //trigger loading of next trail map
+            return {
+                trailMap: null,
+            };
+        }
+        return null;
     }
 
-    shouldComponentUpdate(nextProps) {
-        return this.props.trailMapFilename !== nextProps.trailMapFilename ||
-            this.props.waitTimeDate !== nextProps.waitTimeDate;
+    state = {
+        trailMap: null,
+    };
+
+    componentDidMount() {
+        this.checkLoadTrailMap();
+        this.tryDrawCanvas();
     }
 
     componentDidUpdate() {
-        this.ensureCanvas();
+        this.checkLoadTrailMap();
+        this.tryDrawCanvas();
     }
 
-    ensureCanvas() {
+    checkLoadTrailMap() {
         const { trailMapFilename } = this.props;
-        if (!trailMapFilename) {
+        if (!trailMapFilename || this.state.trailMap) {
+            //already loading / loaded, or filename not yet known
             return;
         }
-        if (!this.trailMap || this.trailMap.filename !== trailMapFilename) {
-            this.loadTrailMap(trailMapFilename);
-        } else if (this.canvas.width && this.canvas.height) {
-            this.drawCanvas(trailMapFilename);
-        }
+
+        const image = new Image();
+        image.alt = 'Trail Map';
+        image.src = `${process.env.PUBLIC_URL}/trailmaps/${trailMapFilename}`;
+        image.onload = event => this.handleTrailMapLoaded(trailMapFilename, event.target);
+        this.setState({
+            trailMap: {
+                filename: trailMapFilename,
+                loaded: false,
+                image,
+            }
+        });
     }
 
-    handleTrailMapLoaded = event => {
+    handleTrailMapLoaded = ( trailMapFilename, trailMapImage) => {
         if (!this.canvas) {
             // component unmounted before image loaded
             return;
         }
-        const trailMap = event.target;
-        this.canvas.width = trailMap.width;
-        this.canvas.height = trailMap.height;
-        this.forceUpdate(); // cause PinchZoomPan to calculate autofit minScale, and invoke ensureCanvas
+        const { trailMap } = this.state;
+        if (!trailMap || trailMap.filename !== trailMapFilename) {
+            //browsed to next resort before previous resort's trailmap image loaded
+            return;
+        }
+        this.canvas.width = trailMapImage.width;
+        this.canvas.height = trailMapImage.height;
+        this.setState({
+            trailMap: {
+                ...trailMap,
+                loaded: true,
+            }
+        });
     }
 
-    loadTrailMap(trailMapFilename) {
-        const image = new Image();
-        this.trailMap = {
-            filename: trailMapFilename,
-            image,
-        };
-        image.alt = 'Trail Map';
-        image.src = `${process.env.PUBLIC_URL}/trailmaps/${trailMapFilename}`;
-        image.onload = this.handleTrailMapLoaded;
+    get canvasReady() {
+        if (!this.canvas) {
+            return false;
+        }
+        const { loaded, image } = this.state.trailMap || {};
+        return loaded
+            && image.height
+            && image.width
+            && this.canvas.width === image.width
+            && this.canvas.height === image.height;
     }
 
-    drawCanvas(trailMapFilename) {
+    tryDrawCanvas() {
         const context = this.canvas.getContext('2d');
-        context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        context.drawImage(this.trailMap.image, 0, 0);
-
-        this.tryDrawBubbles(trailMapFilename);
+        if (this.canvasReady) {
+            context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            context.drawImage(this.state.trailMap.image, 0, 0);
+            this.tryDrawBubbles();
+        }
     }
 
-    tryDrawBubbles(trailMapFilename) {
+    tryDrawBubbles() {
         const { timePeriods, selectedTimestamp } = this.props.waitTimeDate || {};
         if (!timePeriods || timePeriods.length === 0 || !selectedTimestamp) {
             return;
         }
 
-        const bubbleDefinitions = getBubbleDefinitions(trailMapFilename);
+        const bubbleDefinitions = getBubbleDefinitions(this.props.trailMapFilename);
         const waitTimes = timePeriods.find(timePeriod => timePeriod.timestamp === selectedTimestamp).waitTimes;
         const bubbles = waitTimes.reduce((result, { liftID, seconds }) => {
                 const bubble = bubbleDefinitions.find(({ id }) => id === liftID.toString());
@@ -105,7 +135,7 @@ class WaitTimeMap extends React.Component {
 
     render() {
         return (
-            <PinchZoomPan initialScale={1}>
+            <PinchZoomPan initialScale={1} zoomButtons={this.canvasReady}>
                 <canvas
                     id='trailMap'
                     ref={canvas => this.canvas = canvas}
