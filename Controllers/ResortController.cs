@@ -52,7 +52,8 @@ namespace WaitTime.Controllers
                 .Where(u => u.Lift.ResortID == resort.ResortID)
                 .Select(u => u.LocalDate)
                 .Distinct()
-                .OrderBy(date => date);
+                .OrderBy(date => date)
+                .ToList();
             var model = new ResortModel
             {
                 ID = resort.ResortID,
@@ -66,7 +67,7 @@ namespace WaitTime.Controllers
                 Dates = dates,
                 LiftCount = resort.Lifts.Count()
             };
-            if (dates.Count() > 0)
+            if (dates.Count > 0)
             {
                 model.LastDate = WaitTimeController.GetWaitTimeDate(resort.ResortID, dates.Last(), _context);
             }
