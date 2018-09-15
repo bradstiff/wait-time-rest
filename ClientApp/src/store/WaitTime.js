@@ -55,33 +55,34 @@ const getMiddleTimestamp = waitTimeDate => {
 export default (state = {}, action) => {
     if (action.type === loadDateRequestType) {
         const dates = (state[action.slug] || []).slice();
-        dates.push({
-            date: action.date,
-            loading: true
-        });
         return {
             ...state,
-            [action.slug]: dates,
+            [action.slug]: [
+                ...dates,
+                {
+                    date: action.date,
+                    loading: true
+                }
+            ]
         };
     }
 
     if (action.type === loadDateSuccessType) {
         const { slug, date, waitTimeDate: fetchedWaitTimeDate } = action;
         const dates = state[slug] || [];
-        const newDates = dates.map(waitTimeDate => {
-            if (waitTimeDate.date.isSame(date)) {
-                return {
-                    ...fetchedWaitTimeDate,
-                    date,
-                    selectedTimestamp: getMiddleTimestamp(fetchedWaitTimeDate),
-                    loading: false,
-                };
-            }
-            return waitTimeDate;
-        });
         return {
             ...state,
-            [slug]: newDates
+            [slug]: dates.map(waitTimeDate => {
+                if (waitTimeDate.date.isSame(date)) {
+                    return {
+                        ...fetchedWaitTimeDate,
+                        date,
+                        selectedTimestamp: getMiddleTimestamp(fetchedWaitTimeDate),
+                        loading: false,
+                    };
+                }
+                return waitTimeDate;
+            })
         };
     }
 
@@ -93,17 +94,18 @@ export default (state = {}, action) => {
             return state;
         }
 
-        const dates = state[slug] || [];
-        const newDates = dates.slice();
-        newDates.push({
-            ...lastWaitTimeDate,
-            date: moment(lastWaitTimeDate.date),
-            selectedTimestamp: getMiddleTimestamp(lastWaitTimeDate),
-            loading: false,
-        });
+        const dates = (state[slug] || []).slice();
         return {
             ...state,
-            [slug]: newDates,
+            [slug]: [
+                ...dates,
+                {
+                    ...lastWaitTimeDate,
+                    date: moment(lastWaitTimeDate.date),
+                    selectedTimestamp: getMiddleTimestamp(lastWaitTimeDate),
+                    loading: false,
+                }
+            ],
         };
     }
 
