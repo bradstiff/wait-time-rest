@@ -16,7 +16,6 @@ class WaitTimeMap extends React.PureComponent {
     static getDerivedStateFromProps(nextProps, state) {
         if (state.trailMap && nextProps.trailMapFilename !== state.trailMap.filename) {
             //trigger loading of next trail map
-            this.image = null;
             return {
                 trailMap: null,
             };
@@ -44,8 +43,12 @@ class WaitTimeMap extends React.PureComponent {
 
     checkLoadTrailMap() {
         const { trailMapFilename } = this.props;
-        if (!trailMapFilename || this.state.trailMap) {
-            //already loading / loaded, or filename not yet known
+        if (!trailMapFilename) {
+            //filename not yet known
+            return;
+        }
+        if (this.state.trailMap) {
+            //already loading / loaded
             return;
         }
 
