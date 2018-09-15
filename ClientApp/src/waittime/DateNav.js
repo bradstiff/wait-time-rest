@@ -22,11 +22,13 @@ const SelectedDate = styled.div`
     flex: auto;
     text-align: center;
     font-weight: 700;
-    font-size: 22px;
     color: #D44126;
     text-transform: uppercase;
     border: none;
     font-family: "Gotham A", "Century Gothic", sans-serif;
+    @media (min-width: 600px) {
+        font-size: 22px;
+    }
 `;
 
 const styles = {

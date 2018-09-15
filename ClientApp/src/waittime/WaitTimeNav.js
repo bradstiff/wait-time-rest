@@ -17,8 +17,6 @@ import DateNav from './DateNav';
 import ResortList from '../common/ResortList';
 import Locations from '../app/Locations';
 
-const DESKTOP_BREAKPOINT = 600;
-
 const ResortName = styled.span`
     flex: auto;
     vertical-align: middle;
@@ -26,7 +24,7 @@ const ResortName = styled.span`
     border: none;
     font-family: "Gotham A", "Century Gothic", sans-serif;
     font-weight: 800;
-    @media (min-width: ${DESKTOP_BREAKPOINT}px) {
+    @media (min-width: 600px) {
         font-size: 28px;
         color: #FFF;
         padding: 2px 5px 2px 5px;
@@ -40,7 +38,6 @@ const styles = theme => ({
     },
     menuButton: {
         marginLeft: -12,
-        marginRight: 20,
     },
 });
 
@@ -72,17 +69,20 @@ class WaitTimeNav extends React.PureComponent {
 
     render() {
         const { name, dates, date, classes, width } = this.props;
-        const dateDisplayFormat = isWidthUp('sm', width)
-            ? 'dddd, LL'
-            : 'ddd, ll';
-        const dateNavStyle = isWidthUp('sm', width)
-            ? { minWidth: 400, display: 'inline-flex' }
-            : { padding: '0px 10px' };
 
+        const nameDisplay = isWidthUp('md', width)
+            ? `${name} Wait Times`
+            : name;
+        const dateDisplay = isWidthUp('md', width) ? { format: 'dddd, LL', style: { minWidth: 400, display: 'inline-flex' } }
+            : isWidthUp('sm', width) ? { format: 'll', style: { minWidth: 250, display: 'inline-flex' } }
+            : { format: 'ddd, ll', style: { padding: '0px 10px' } };
+        const toolbarVariant = isWidthUp('sm', width)
+            ? 'regular'
+            : 'dense';
         return (
             <div>
                 <AppBar position="static" color='default'>
-                    <Toolbar>
+                    <Toolbar variant={toolbarVariant}>
                         <IconButton
                             className={classes.menuButton}
                             aria-label="Menu"
@@ -90,27 +90,27 @@ class WaitTimeNav extends React.PureComponent {
                         >
                             <MenuIcon />
                         </IconButton>
-                        <ResortName>{name} Wait Times</ResortName>
-                        <Hidden smDown>
+                        <ResortName>{nameDisplay}</ResortName>
+                        <Hidden xsDown>
                             <DateNav
                                 dates={dates}
                                 date={date}
-                                displayFormat={dateDisplayFormat}
-                                style={dateNavStyle}
+                                displayFormat={dateDisplay.format}
+                                style={dateDisplay.style}
                                 selectDate={this.handleSelectDate}
                             />
                         </Hidden>
                     </Toolbar>
+                    <Hidden smUp>
+                        <DateNav
+                            dates={dates}
+                            date={date}
+                            displayFormat={dateDisplay.format}
+                            style={dateDisplay.style}
+                            selectDate={this.handleSelectDate}
+                        />
+                    </Hidden>
                 </AppBar>
-                <Hidden mdUp>
-                    <DateNav
-                        dates={dates}
-                        date={date}
-                        displayFormat={dateDisplayFormat}
-                        style={dateNavStyle}
-                        selectDate={this.handleSelectDate}
-                    />
-                </Hidden>
                 <Drawer open={this.state.showMenu} onClose={() => this.handleToggleMenu(false)} classes={{ paper: classes.resortDrawer }}>
                     <ResortList linkTo={resort => Locations.WaitTime.toUrl({ slug: resort.slug })} onClick={() => this.handleToggleMenu(false)} />
                 </Drawer>
