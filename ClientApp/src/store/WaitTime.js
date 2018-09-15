@@ -1,12 +1,15 @@
 ﻿import Rollbar from 'rollbar';
+import moment from 'moment';
+
+import { loadResortSuccessType } from './Resort';
 
 const loadDateRequestType = 'LOAD_DATE';
 const loadDateSuccessType = 'LOAD_DATE_SUCCESS';
-const loadDateErrorType = 'LOAD_DATE_ERROR';
+const loadDateFailureType = 'LOAD_DATE_FAILURE';
 
 const selectTimePeriodType = 'SELECT_TIME_PERIOD';
 
-export const loadDate = (slug, date, waitTimeDate = null) => async (dispatch, getState) => {
+export const loadDate = (slug, date) => async (dispatch, getState) => {
     const dates = getState().waitTimes[slug];
     if (dates) {
         const waitTimeDate = dates.find(waitTimeDate => waitTimeDate.date.isSame(date));
@@ -17,47 +20,36 @@ export const loadDate = (slug, date, waitTimeDate = null) => async (dispatch, ge
 
     dispatch({ type: loadDateRequestType, slug, date });
 
-    const loadWaitTimeDate = waitTimeDate => {
-        dispatch({ type: loadDateSuccessType, slug, date, waitTimeDate });
-        try {
-            const { timePeriods } = waitTimeDate;
-            if (timePeriods.length) {
-                const middleIndex = timePeriods.length > 1
-                    ? Math.round(timePeriods.length / 2)
-                    : 0;
-                const middleTimestamp = timePeriods[middleIndex].timestamp;
-                dispatch(selectTimePeriod(slug, date, middleTimestamp));
-            }
-        }
-        catch (error) {
-            Rollbar.error(error);
+    try {
+        const response = await fetch(`/api/waitTimes/${slug}/${date.format('YYYY-MM-DD')}`);
+        if (response.ok) {
+            const waitTimeDate = await response.json();
+            dispatch({ type: loadDateSuccessType, slug, date, waitTimeDate });
+        } else {
+            const { status: code, statusText: error } = response;
+            Rollbar.error({ code, error });
+            dispatch({ type: loadDateFailureType, slug, date, code, error });
         }
     }
-
-    if (waitTimeDate) {
-        //loadResort action requesting to load lastDate into store 
-        loadWaitTimeDate(waitTimeDate);
-    } else {
-        try {
-            const response = await fetch(`/api/waitTimes/${slug}/${date.format('YYYY-MM-DD')}`);
-            if (response.ok) {
-                const waitTimeDate = await response.json();
-                loadWaitTimeDate(waitTimeDate);
-            } else {
-                const { status: code, statusText: error } = response;
-                Rollbar.error({ code, error });
-                dispatch({ type: loadDateErrorType, slug, date, code, error });
-            }
-        }
-        catch (error) {
-            Rollbar.error(error);
-            dispatch({ type: loadDateErrorType, slug, date, error });
-        }
+    catch (error) {
+        Rollbar.error(error);
+        dispatch({ type: loadDateFailureType, slug, date, error });
     }
 };
 
 export const selectTimePeriod = (slug, date, timestamp) => (dispatch, getState) => {
     dispatch({ type: selectTimePeriodType, slug, date, timestamp });
+};
+
+const getMiddleTimestamp = waitTimeDate => {
+    const { timePeriods } = waitTimeDate || {};
+    if (!timePeriods || !timePeriods.length) {
+        return null;
+    }
+    const middleIndex = timePeriods.length > 1
+        ? Math.round(timePeriods.length / 2)
+        : 0;
+    return timePeriods[middleIndex].timestamp;
 };
 
 export default (state = {}, action) => {
@@ -74,23 +66,48 @@ export default (state = {}, action) => {
     }
 
     if (action.type === loadDateSuccessType) {
-        const dates = state[action.slug] || [];
+        const { slug, date, waitTimeDate: fetchedWaitTimeDate } = action;
+        const dates = state[slug] || [];
+        const newDates = dates.map(waitTimeDate => {
+            if (waitTimeDate.date.isSame(date)) {
+                return {
+                    ...fetchedWaitTimeDate,
+                    date,
+                    selectedTimestamp: getMiddleTimestamp(fetchedWaitTimeDate),
+                    loading: false,
+                };
+            }
+            return waitTimeDate;
+        });
         return {
             ...state,
-            [action.slug]: dates.map(waitTimeDate => {
-                if (waitTimeDate.date.isSame(action.date)) {
-                    return {
-                        date: action.date,
-                        timePeriods: action.waitTimeDate.timePeriods,
-                        loading: false,
-                    }
-                }
-                return waitTimeDate;
-            })
+            [slug]: newDates
         };
     }
 
-    if (action.type === loadDateErrorType) {
+    if (action.type === loadResortSuccessType) {
+        //copy resort.lastDate into waitTime state, from where it will be accessed.
+        const { lastDate: lastWaitTimeDate, slug } = action.resort;
+
+        if (!lastWaitTimeDate) {
+            return state;
+        }
+
+        const dates = state[slug] || [];
+        const newDates = dates.slice();
+        newDates.push({
+            ...lastWaitTimeDate,
+            date: moment(lastWaitTimeDate.date),
+            selectedTimestamp: getMiddleTimestamp(lastWaitTimeDate),
+            loading: false,
+        });
+        return {
+            ...state,
+            [slug]: newDates,
+        };
+    }
+
+    if (action.type === loadDateFailureType) {
         const dates = state[action.slug] || [];
         return {
             ...state,

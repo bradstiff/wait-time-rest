@@ -4,11 +4,43 @@ import { loadDate } from './WaitTime';
 
 const loadResortsRequestType = 'LOAD_RESORTS';
 const loadResortsSuccessType = 'LOAD_RESORTS_SUCCESS';
-const loadResortsErrorType = 'LOAD_RESORTS_ERROR';
+const loadResortsFailureType = 'LOAD_RESORTS_FAILURE';
 
 const loadResortRequestType = 'LOAD_RESORT';
-const loadResortSuccessType = 'LOAD_RESORT_SUCCESS';
-const loadResortErrorType = 'LOAD_RESORT_ERROR';
+export const loadResortSuccessType = 'LOAD_RESORT_SUCCESS';
+const loadResortFailureType = 'LOAD_RESORT_FAILURE';
+
+/* ********************************************************
+ * Supports a list of resorts with just a few properties,
+ * and an entry for each resort requested, indexed by slug, 
+ * and containing all resort data.  E.g.,
+ *
+ * state: {
+ *      all: [{ slug, name, logoFilename, hasWaitTimeData }, ...],
+ *      ['winter-park']: {
+ *          loading: true
+ *      },
+ *      ['steamboat']: {
+ *          loading: false,
+ *          id,
+ *          name,
+ *          trailmapFilename,
+ *          dates: [],
+ *          lastDate,
+ *          ...
+ *      },
+ * }
+ *
+ * UI optimistically attempts to retrieve resort entry from state
+ * via mapStateToProps.  When resort prop is falsy, UI dispatches 
+ * load action, which creates a stub that the UI subsequently 
+ * retrieves. The stub has loading: true, which the UI 
+ * observes. The stub prevents the UI from dispatching multiple 
+ * load actions. The stub also enables the action to suppress 
+ * refetching. Finally, the stub supports error codes, including 404.
+ * 
+ * When the fetch resolves, the stub is replaced with the full object.
+ * *************************************************************/
 
 export const loadResorts = () => async (dispatch, getState) => {
     if (getState().resorts.all) {
@@ -25,12 +57,12 @@ export const loadResorts = () => async (dispatch, getState) => {
         } else {
             const { status: code, statusText: error } = response;
             Rollbar.error({ code, error });
-            dispatch({ type: loadResortsErrorType, code, error });
+            dispatch({ type: loadResortsFailureType, code, error });
         }
     }
     catch (error) {
         Rollbar.error(error);
-        dispatch({ type: loadResortsErrorType, error });
+        dispatch({ type: loadResortsFailureType, error });
     }
 };
 
@@ -43,48 +75,21 @@ export const loadResort = slug => async (dispatch, getState) => {
     dispatch({ type: loadResortRequestType, slug });
 
     try {
-        const response = await fetch('http://httpstat.us/500' || `/api/resorts/${slug}`);
+        const response = await fetch(`/api/resorts/${slug}`);
         if (response.ok) {
             resort = await response.json();
             dispatch({ type: loadResortSuccessType, slug, resort });
-            if (resort.lastDate) {
-                const date = moment(resort.lastDate.date);
-                dispatch(loadDate(slug, date, resort.lastDate));
-            }
         } else {
             const { status: code, statusText: error } = response;
             Rollbar.error({ code, error });
-            dispatch({ type: loadResortErrorType, slug, code, error });
+            dispatch({ type: loadResortFailureType, slug, code, error });
         }
     }
     catch (error) {
         Rollbar.error(error);
-        dispatch({ type: loadResortErrorType, slug, error });
+        dispatch({ type: loadResortFailureType, slug, error });
     }
 };
-
-/* ********************************************************
- * Supports a list of resorts with just a few properties,
- * and an entry for each resort requested indexed by slug, 
- * containing all resort data. Resort entries are stubbed 
- * when requested to suppress re-requesting, and inform
- * the client of requests-in-progress.
- * 
- * state: {
- *      all: [{ slug, name, logoFilename, hasWaitTimeData }],
- *      ['steamboat']: {
- *          id,
- *          name,
- *          trailmapFilename,
- *          dates: [],
- *          loading: false,
- *          ...
- *      },
- *      ['winter-park']: {
- *          loading: true
- *      }
- * }
- * *************************************************************/
 
 export default (state = {}, action) => {
     if (action.type === loadResortsRequestType) {
@@ -100,7 +105,7 @@ export default (state = {}, action) => {
         };
     }
 
-    if (action.type === loadResortsErrorType) {
+    if (action.type === loadResortsFailureType) {
         const { code, error } = action;
         return {
             ...state,
@@ -131,7 +136,7 @@ export default (state = {}, action) => {
         };
     }
 
-    if (action.type === loadResortErrorType) {
+    if (action.type === loadResortFailureType) {
         const { code, error } = action;
         return {
             ...state,
