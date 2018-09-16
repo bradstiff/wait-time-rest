@@ -11,17 +11,11 @@ class WaitTimeMap extends React.PureComponent {
     static propTypes = {
         trailMapFilename: PropTypes.string,
         waitTimeDate: WaitTimeDateShape,
-    };
 
-    static getDerivedStateFromProps(nextProps, state) {
-        if (state.trailMap && nextProps.trailMapFilename !== state.trailMap.filename) {
-            //trigger loading of next trail map
-            return {
-                trailMap: null,
-            };
-        }
-        return null;
-    }
+        //trailMapFilename should be passed as key. Component auto-remounts when navigating to another resort.
+        //Avoids the need to use getDerivedStateFromProps.
+        key: PropTypes.string, 
+    };
 
     state = {
         trailMap: null,

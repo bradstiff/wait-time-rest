@@ -60,7 +60,7 @@ class WaitTimeView extends React.Component {
                 <div style={timeSliderContainerStyle}>
                     <TimeSlider waitTimeDate={waitTimeDate} onSelectTimePeriod={this.handleSelectTimePeriod} />
                 </div>
-                <WaitTimeMap trailMapFilename={resort.trailMapFilename} waitTimeDate={waitTimeDate} />
+                <WaitTimeMap key={resort.trailMapFilename} trailMapFilename={resort.trailMapFilename} waitTimeDate={waitTimeDate} />
             </main>
         );
     };
