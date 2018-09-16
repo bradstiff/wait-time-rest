@@ -21,6 +21,10 @@ class WaitTimeMap extends React.PureComponent {
         trailMap: null,
     };
 
+    setCanvas = ref => {
+        this.canvas = ref;
+    }
+
     componentDidMount() {
         this.checkLoadTrailMap();
         this.tryDrawCanvas();
@@ -148,7 +152,7 @@ class WaitTimeMap extends React.PureComponent {
             <PinchZoomPan initialScale={1} zoomButtons={this.canvasReady} key='map'>
                 <canvas
                     id='trailMap'
-                    ref={canvas => this.canvas = canvas}
+                    ref={this.setCanvas}
                     width={0}
                     height={0}
                     scale={1}
