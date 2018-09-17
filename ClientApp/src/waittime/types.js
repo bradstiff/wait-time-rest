@@ -1,15 +1,17 @@
 ﻿import PropTypes from 'prop-types';
 
+export const TimePeriodShape = PropTypes.shape({
+    timestamp: PropTypes.number.isRequired, //time of day as Total Seconds, e.g., 8AM = 8 * 60 * 60
+    waitTimes: PropTypes.arrayOf(PropTypes.shape({
+        liftID: PropTypes.number.isRequired,
+        seconds: PropTypes.number.isRequired,
+    })).isRequired
+});
+
 const WaitTimeDateFull = {
     date: PropTypes.object.isRequired, //instance of moment, todo: add custom validation
     selectedTimestamp: PropTypes.number.isRequired,
-    timePeriods: PropTypes.arrayOf(PropTypes.shape({
-        timestamp: PropTypes.number.isRequired,
-        waitTimes: PropTypes.arrayOf(PropTypes.shape({
-            liftID: PropTypes.number.isRequired,
-            seconds: PropTypes.number.isRequired,
-        })).isRequired
-    })).isRequired,
+    timePeriods: PropTypes.arrayOf(TimePeriodShape).isRequired,
     loading: PropTypes.bool.isRequired,
 };
 

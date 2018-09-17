@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Slider from 'rc-slider';
 import moment from 'moment';
 import { compose } from 'redux';
-import withWidth from '@material-ui/core/withWidth';
+import withDimensions from 'react-dimensions';
 
 import 'rc-slider/assets/index.css';
 
@@ -17,56 +17,64 @@ const containerStyle = {
     overflow: 'hidden',
 };
 
-class TimeSlider extends React.PureComponent {
+class TimeSlider extends React.Component {
     static propTypes = {
         waitTimeDate: WaitTimeDateShape,
         onSelectTimePeriod: PropTypes.func,
     };
 
-    render() {
-        const { waitTimeDate, onSelectTimePeriod } = this.props;
-        if (!waitTimeDate) {
+    getSliderMarks(timePeriods) {
+        /* ********************************************************************************
+         * Calculate the marks to display on the slider. Each mark corresponds to a time of 
+         * day, and is labeled according to culture.  We display as many marks as will fit,
+         * depending on the # of time periods in the wait time date, and the container width.
+         * For wide containers, or small # of time periods, we can display a mark for each time
+         * period (e.g., every 15 minutes). For small containers or large # of time periods,
+         * we display a mark for every x time periods, e.g., every 30 minutes, 45 minutes, etc.
+         * *******************************************************************************/
+        const { containerWidth } = this.props;
+        if (!containerWidth) {
             return null;
         }
-        const { timePeriods, selectedTimestamp } = waitTimeDate;
-        if (!timePeriods || !timePeriods.length || !selectedTimestamp) {
-            return null;
-        }
 
-        const timeFormat = 'LT';
-        const availableWidth = Math.min(window.innerWidth, 1550) - 50;
-        const maxMarks = availableWidth / 50; //~50 pixels per mark
-        const periodsPerMarkOptions = [1, 2, 3, 4, 5, 6];
-        const periodsPerMark = periodsPerMarkOptions.find(intervalsPerMark => timePeriods.length / maxMarks < intervalsPerMark);
-        const minutesPerMark = 15 * periodsPerMark; //each period is 15 minutes; for small screens we have to decrease the granularity
+        const marksToDisplay = containerWidth / 50; //allow 50px per mark
+        const periodsPerMark = Math.ceil(timePeriods.length / marksToDisplay);
+        const secondsPerMark = 15 * 60 * periodsPerMark;  //each time period is 15 minutes
+        const startSeconds = timePeriods[0].timestamp;
 
-        let minutesAtPreviousMark = 0;
-        const endTimePeriod = timePeriods[timePeriods.length - 1];
-        const minutesAtEndMark = endTimePeriod.timestamp / 60;
-        const marks = timePeriods.reduce((acc, timePeriod) => {
-            const minutes = timePeriod.timestamp / 60;
-            const makeMark = minutesAtPreviousMark === 0 || // first timeslot
-                timePeriod === endTimePeriod || // end timeslot
-                (minutes - minutesAtPreviousMark >= minutesPerMark && // at least minutesPerMark gap to previous mark
-                    minutesAtEndMark - minutes >= minutesPerMark / 2); // and this mark would not be too close to end mark
+        const timePeriodsToDisplay = periodsPerMark > 1
+            //display a mark for every x time periods, e.g., every 30 minutes, 45 minutes, etc.
+            ? timePeriods.filter(({ timestamp: seconds }) => (seconds - startSeconds) % secondsPerMark === 0)
+            //display a mark for every time period, e.g., every 15 minutes
+            : timePeriods;
 
-            if (makeMark) {
-                acc[timePeriod.timestamp.toString()] = moment.unix(timePeriod.timestamp).utc().format(timeFormat);
-                minutesAtPreviousMark = minutes;
-            }
-            return acc;
+        return timePeriodsToDisplay.reduce((marks, timePeriod) => {
+            marks[timePeriod.timestamp.toString()] = moment.unix(timePeriod.timestamp).utc().format('LT');
+            return marks;
         }, {});
+    }
+
+    render() {
+        const { selectedTimestamp, timePeriods } = this.props.waitTimeDate || {};
+        if (!selectedTimestamp || !timePeriods || !timePeriods.length) {
+            return null;
+        }
+
+        const marks = this.getSliderMarks(timePeriods);
+        if (!marks) {
+            return null;
+        }
 
         return (
             <div style={containerStyle}>
                 <Slider
                     marks={marks}
                     min={timePeriods[0].timestamp}
-                    max={endTimePeriod.timestamp}
+                    max={timePeriods[timePeriods.length - 1].timestamp}
                     step={15 * 60}
                     included={false}
                     value={selectedTimestamp}
-                    onChange={onSelectTimePeriod}
+                    onChange={this.props.onSelectTimePeriod}
                     handleStyle={handleStyle}
                 />
             </div>
@@ -75,5 +83,5 @@ class TimeSlider extends React.PureComponent {
 }
 
 export default compose(
-    withWidth(), //force re-render on resize
+    withDimensions({ debounce: 166 }), //10 frames at 60Hz
 )(TimeSlider);
