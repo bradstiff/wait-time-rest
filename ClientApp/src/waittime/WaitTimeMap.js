@@ -9,7 +9,7 @@ import { getBubbleDefinitions } from '../store/liftBubbleDefinitions';
 
 //trailMapFilename is passed as key. Component auto-remounts when navigating to next resort.
 //Avoids the need to use getDerivedStateFromProps to cause next resort's trail map to load.
-class WaitTimeMap extends React.PureComponent {
+class WaitTimeMap extends React.Component {
     static propTypes = {
         trailMapFilename: PropTypes.string,
         waitTimeDate: WaitTimeDateShape,

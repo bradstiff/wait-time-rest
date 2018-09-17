@@ -26,7 +26,7 @@ const SelectedDate = styled.div`
     text-transform: uppercase;
     border: none;
     font-family: "Gotham A", "Century Gothic", sans-serif;
-    @media (min-width: 600px) {
+    @media (min-width: 960px) {
         font-size: 22px;
     }
 `;

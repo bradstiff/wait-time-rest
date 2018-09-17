@@ -21,6 +21,7 @@ class TimeSlider extends React.Component {
     static propTypes = {
         waitTimeDate: WaitTimeDateShape,
         onSelectTimePeriod: PropTypes.func,
+        containerWidth: PropTypes.number,
     };
 
     getSliderMarks(timePeriods) {

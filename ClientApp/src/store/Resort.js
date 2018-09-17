@@ -1,6 +1,5 @@
 ﻿import Rollbar from 'rollbar';
 import moment from 'moment';
-import { loadDate } from './WaitTime';
 
 const loadResortsRequestType = 'LOAD_RESORTS';
 const loadResortsSuccessType = 'LOAD_RESORTS_SUCCESS';

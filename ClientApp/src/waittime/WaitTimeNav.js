@@ -24,7 +24,7 @@ const ResortName = styled.span`
     border: none;
     font-family: "Gotham A", "Century Gothic", sans-serif;
     font-weight: 800;
-    @media (min-width: 600px) {
+    @media (min-width: 960px) {
         font-size: 28px;
         color: #FFF;
         padding: 2px 5px 2px 5px;
@@ -38,6 +38,15 @@ const styles = theme => ({
     },
     menuButton: {
         marginLeft: -12,
+    },
+    [theme.breakpoints.up('xs')]: {
+        dateNav: { padding: '0px 10px' }
+    },
+    [theme.breakpoints.up('sm')]: {
+        dateNav: { minWidth: 250, display: 'inline-flex' }
+    },
+    [theme.breakpoints.up('md')]: {
+        dateNav: { minWidth: 400, display: 'inline-flex' }
     },
 });
 
@@ -70,12 +79,12 @@ class WaitTimeNav extends React.PureComponent {
     render() {
         const { name, dates, date, classes, width } = this.props;
 
-        const nameDisplay = isWidthUp('md', width)
+        const nameDisplay = isWidthUp('sm', width)
             ? `${name} Wait Times`
             : name;
-        const dateDisplay = isWidthUp('md', width) ? { format: 'dddd, LL', style: { minWidth: 400, display: 'inline-flex' } }
-            : isWidthUp('sm', width) ? { format: 'll', style: { minWidth: 250, display: 'inline-flex' } }
-            : { format: 'ddd, ll', style: { padding: '0px 10px' } };
+        const dateFormat = isWidthUp('lg', width) ? 'dddd, LL'
+            : isWidthUp('sm', width) ? 'ddd, ll'
+            : 'ddd, LL';
         const toolbarVariant = isWidthUp('sm', width)
             ? 'regular'
             : 'dense';
@@ -95,8 +104,8 @@ class WaitTimeNav extends React.PureComponent {
                             <DateNav
                                 dates={dates}
                                 date={date}
-                                displayFormat={dateDisplay.format}
-                                style={dateDisplay.style}
+                                displayFormat={dateFormat}
+                                className={classes.dateNav}
                                 selectDate={this.handleSelectDate}
                             />
                         </Hidden>
@@ -105,8 +114,8 @@ class WaitTimeNav extends React.PureComponent {
                         <DateNav
                             dates={dates}
                             date={date}
-                            displayFormat={dateDisplay.format}
-                            style={dateDisplay.style}
+                            displayFormat={dateFormat}
+                            className={classes.dateNav}
                             selectDate={this.handleSelectDate}
                         />
                     </Hidden>
