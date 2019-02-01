@@ -52,7 +52,7 @@ class WaitTimeMap extends React.Component {
         }
 
         this.image = new Image();
-        this.image.onload = this.handleTrailMapLoaded;
+        this.image.addEventListener("load", this.handleTrailMapLoaded);
         this.image.src = `${process.env.PUBLIC_URL}/trailmaps/${trailMapFilename}`;
         this.image.alt = 'Trail Map';
 
@@ -148,18 +148,20 @@ class WaitTimeMap extends React.Component {
     }
 
     render() {
-        return ([
-            <PinchZoomPan initialScale={1} zoomButtons={this.canvasReady} key='map'>
-                <canvas
-                    id='trailMap'
-                    ref={this.setCanvas}
-                    width={0}
-                    height={0}
-                    scale={1}
-                />
-            </PinchZoomPan>,
-            <ModalCircularProgress open={!this.canvasReady} key='progress' />
-        ]);
+        return (
+            <React.Fragment>
+                <PinchZoomPan initialScale={1} zoomButtons={this.canvasReady}>
+                    <canvas
+                        id='trailMap'
+                        ref={this.setCanvas}
+                        width={0}
+                        height={0}
+                        scale={1}
+                    />
+                </PinchZoomPan>,
+                <ModalCircularProgress open={!this.canvasReady} />
+            </React.Fragment>
+        );
     }
 }
 

@@ -25,9 +25,11 @@ const Flex = styled.div`
     }
 
     > main {
-        padding-top: 10px;
         flex: auto;
+        padding-top: 10px;
         overflow: hidden;
+        display: flex;
+        flex-direction: column;
     }
 `;
 

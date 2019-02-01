@@ -11,8 +11,13 @@ import TimeSlider from './TimeSlider';
 import UserErrorMessage from '../common/UserErrorMessage';
 
 const timeSliderContainerStyle = {
+    flex: 'none',
     minHeight: 40,
 };
+const waitTimeMapContainerStyle = {
+    flex: 'auto',
+    overflow: 'hidden'
+}
 
 class WaitTimeView extends React.Component {
     static propTypes = {
@@ -60,7 +65,9 @@ class WaitTimeView extends React.Component {
                 <div style={timeSliderContainerStyle}>
                     <TimeSlider waitTimeDate={waitTimeDate} onSelectTimePeriod={this.handleSelectTimePeriod} />
                 </div>
-                <WaitTimeMap key={resort.trailMapFilename} trailMapFilename={resort.trailMapFilename} waitTimeDate={waitTimeDate} />
+                <div style={waitTimeMapContainerStyle}>
+                    <WaitTimeMap key={resort.trailMapFilename} trailMapFilename={resort.trailMapFilename} waitTimeDate={waitTimeDate} />
+                </div>
             </main>
         );
     };
