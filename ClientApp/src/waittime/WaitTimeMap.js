@@ -150,7 +150,7 @@ class WaitTimeMap extends React.Component {
     render() {
         return (
             <React.Fragment>
-                <PinchZoomPan initialScale={1} zoomButtons={this.canvasReady}>
+                <PinchZoomPan initialScale={1} zoomButtons={this.canvasReady} doubleTapBehavior='zoom'>
                     <canvas
                         id='trailMap'
                         ref={this.setCanvas}
