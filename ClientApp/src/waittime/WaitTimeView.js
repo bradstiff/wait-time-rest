@@ -16,8 +16,15 @@ const timeSliderContainerStyle = {
 };
 const waitTimeMapContainerStyle = {
     flex: 'auto',
-    overflow: 'hidden'
-}
+    overflow: 'hidden',
+    position: 'relative'
+};
+//takes 100% of the flex size of its parent
+const waitTimeMapSubContainerStyle = {
+    position: 'absolute',
+    width: '100%',
+    height: '100%'
+};
 
 class WaitTimeView extends React.Component {
     static propTypes = {
@@ -66,7 +73,9 @@ class WaitTimeView extends React.Component {
                     <TimeSlider waitTimeDate={waitTimeDate} onSelectTimePeriod={this.handleSelectTimePeriod} />
                 </div>
                 <div style={waitTimeMapContainerStyle}>
-                    <WaitTimeMap key={resort.trailMapFilename} trailMapFilename={resort.trailMapFilename} waitTimeDate={waitTimeDate} />
+                    <div style={waitTimeMapSubContainerStyle}>
+                        <WaitTimeMap key={resort.trailMapFilename} trailMapFilename={resort.trailMapFilename} waitTimeDate={waitTimeDate} />
+                    </div>
                 </div>
             </main>
         );
