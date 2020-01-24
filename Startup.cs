@@ -37,17 +37,17 @@ namespace WaitTime
             //explicitly inject WaitTimeContext into controller instances
             services.AddDbContext<WaitTimeContext>(options => options.UseSqlServer(Configuration["DbConnection"]));
 
+            services.AddRequestDecompression(o =>
+            {
+                o.Providers.Add<GzipDecompressionProvider>();
+            });
+
             services.AddMvc();
 
             // React app production build static file location
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/build";
-            });
-
-            services.AddRequestDecompression(o =>
-            {
-                o.Providers.Add<GzipDecompressionProvider>();
             });
         }
 
@@ -63,6 +63,8 @@ namespace WaitTime
 
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
+
+            app.UseRequestDecompression();
 
             app.UseMvc(routes =>
             {
@@ -80,8 +82,6 @@ namespace WaitTime
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
-
-            app.UseRequestDecompression();
         }
     }
 }
