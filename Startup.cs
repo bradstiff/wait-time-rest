@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 using Rollbar.AspNetCore;
 using WaitTime.Entities;
+using Anemonis.AspNetCore.RequestDecompression;
 
 namespace WaitTime
 {
@@ -43,6 +44,11 @@ namespace WaitTime
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            services.AddRequestDecompression(o =>
+            {
+                o.Providers.Add<GzipDecompressionProvider>();
+            });
         }
 
         // Add middleware to pipeline
@@ -74,6 +80,8 @@ namespace WaitTime
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+
+            app.UseRequestDecompression();
         }
     }
 }
