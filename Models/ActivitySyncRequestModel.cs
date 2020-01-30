@@ -8,10 +8,11 @@ namespace WaitTime.Models
 {
     public class ActivitySyncRequestModel
     {
-        public List<ActivitySyncBatch> Batches { get; set; }
+        public string Source { get; set; }
+        public List<ActivitySyncBatchModel> Batches { get; set; }
     }
 
-    public class ActivitySyncBatch
+    public class ActivitySyncBatchModel
     {
         public Guid ActivitySyncBatchID { get; set; }
         public Guid ActivityID { get; set; }

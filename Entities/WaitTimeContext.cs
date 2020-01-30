@@ -9,6 +9,9 @@ namespace WaitTime.Entities
         public virtual DbSet<Lift> Lifts { get; set; }
         public virtual DbSet<Resort> Resorts { get; set; }
         public virtual DbSet<Uplift> Uplifts { get; set; }
+        public virtual DbSet<Activity> Activities { get; set; }
+        public virtual DbSet<ActivitySyncBatch> ActivitySyncBatches { get; set; }
+        public virtual DbSet<ActivitySyncBatchLocation> ActivitySyncBatchLocations { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -68,6 +71,36 @@ namespace WaitTime.Entities
                     .HasForeignKey(d => d.LiftID)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Uplift_Lift");
+            });
+
+            modelBuilder.Entity<Activity>(entity =>
+            {
+                entity.ToTable("Activity");
+                entity.Property(e => e.ActivityID).HasColumnName("ActivityID");
+            });
+
+            modelBuilder.Entity<ActivitySyncBatch>(entity =>
+            {
+                entity.ToTable("ActivitySyncBatch");
+                entity.Property(e => e.ActivitySyncBatchID).HasColumnName("ActivitySyncBatchID");
+
+                entity.HasOne(e => e.Activity)
+                    .WithMany(e => e.Batches)
+                    .HasForeignKey(d => d.ActivityID)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ActivitySyncBatch_Activity");
+            });
+
+            modelBuilder.Entity<ActivitySyncBatchLocation>(entity =>
+            {
+                entity.ToTable("ActivitySyncBatchLocation");
+                entity.Property(e => e.ActivitySyncBatchLocationID).HasColumnName("ActivitySyncBatchLocationID");
+
+                entity.HasOne(e => e.Batch)
+                    .WithMany(e => e.Locations)
+                    .HasForeignKey(d => d.ActivitySyncBatchID)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ActivitySyncBatchLocation_ActivitySyncBatch");
             });
         }
     }
