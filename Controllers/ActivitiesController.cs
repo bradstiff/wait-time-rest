@@ -20,10 +20,10 @@ namespace wait_time.Controllers
         private readonly ILogger _logger;
         private readonly WaitTimeContext _context;
 
-        public ActivitiesController(WaitTimeContext context)//, ILogger logger)
+        public ActivitiesController(WaitTimeContext context, ILogger<ActivitiesController> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
-            //_logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         [HttpPut]
