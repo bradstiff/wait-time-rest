@@ -75,16 +75,16 @@ namespace wait_time.Controllers
                             .Range(0, array.GetLength(0))
                             .Select(row => new ActivitySyncBatchLocation
                             {
-                                Latitude = array[row, 0],
-                                Longitude = array[row, 1],
-                                Accuracy = array[row, 2],
-                                Altitude = array[row, 3],
+                                Latitude = array[row, 0] ?? 0,
+                                Longitude = array[row, 1] ?? 0,
+                                Accuracy = array[row, 2] ?? 0,
+                                Altitude = array[row, 3] ?? 0,
                                 AltitudeAccuracy = array[row, 4],
-                                Bearing = array[row, 5],
+                                Bearing = array[row, 5] ?? 0,
                                 BearingAccuracy = array[row, 6],
-                                Speed = array[row, 7],
-                                SpeedAccuracy = array[row, 8],
-                                Timestamp = array[row, 9],
+                                Speed = array[row, 7] ?? 0,
+                                SpeedAccuracy = array[row, 8] ?? 0,
+                                Timestamp = array[row, 9] ?? 0,
                             }).ToList();
 
                         batch = new ActivitySyncBatch

@@ -18,6 +18,6 @@ namespace WaitTime.Models
         public Guid ActivityID { get; set; }
         public int BatchNbr { get; set; }
         [JsonProperty("locations")]
-        public float[,] LocationsArray { get; set; }
+        public float?[,] LocationsArray { get; set; }
     }
 }
