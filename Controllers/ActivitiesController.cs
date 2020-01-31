@@ -36,10 +36,10 @@ namespace wait_time.Controllers
         {
             try
             {
-                Console.WriteLine($"Source: {model.Source}");
                 var sourceTypeID = model.Source.Equals("Android", StringComparison.InvariantCultureIgnoreCase) ? ActivitySourceTypeEnum.Android
-                    : model.Source.Equals("iOS", StringComparison.InvariantCultureIgnoreCase) ? ActivitySourceTypeEnum.iOS
-                    : throw new ArgumentOutOfRangeException(nameof(model.Source));
+                    : ActivitySourceTypeEnum.iOS;
+                    //: model.Source.Equals("iOS", StringComparison.InvariantCultureIgnoreCase) ? ActivitySourceTypeEnum.iOS
+                    //: throw new ArgumentOutOfRangeException(nameof(model.Source));
 
                 foreach(var activityBatches in model.Batches.GroupBy(b => b.ActivityID))
                 {
