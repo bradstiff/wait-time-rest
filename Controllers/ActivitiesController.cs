@@ -36,7 +36,7 @@ namespace wait_time.Controllers
         {
             try
             {
-                var sourceTypeID = model.Source.Equals("Android", StringComparison.InvariantCultureIgnoreCase) ? ActivitySourceTypeEnum.Android
+                var sourceTypeID = model.Source?.Equals("Android", StringComparison.InvariantCultureIgnoreCase) == true ? ActivitySourceTypeEnum.Android
                     : ActivitySourceTypeEnum.iOS;
                     //: model.Source.Equals("iOS", StringComparison.InvariantCultureIgnoreCase) ? ActivitySourceTypeEnum.iOS
                     //: throw new ArgumentOutOfRangeException(nameof(model.Source));
