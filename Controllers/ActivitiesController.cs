@@ -104,7 +104,7 @@ namespace wait_time.Controllers
             {
                 Console.WriteLine("Error processing batch", e);
                 _logger.LogError("Error processing batch", e);
-                return ErrorResponse.AsStatusCodeResult(HttpStatusCode.InternalServerError, "Error processing batch.");
+                return ErrorResponse.AsStatusCodeResult(HttpStatusCode.InternalServerError, $"Error processing batch. {e.ToString()}");
             }
         }
     }
