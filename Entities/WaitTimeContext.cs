@@ -76,17 +76,15 @@ namespace WaitTime.Entities
             modelBuilder.Entity<Activity>(entity =>
             {
                 entity.ToTable("Activity");
-                entity.Property(e => e.ActivityID).HasColumnName("ActivityID");
             });
 
             modelBuilder.Entity<ActivitySyncBatch>(entity =>
             {
                 entity.ToTable("ActivitySyncBatch");
-                entity.Property(e => e.ActivitySyncBatchID).HasColumnName("ActivitySyncBatchID");
 
                 entity.HasOne(e => e.Activity)
                     .WithMany(e => e.Batches)
-                    .HasForeignKey(d => d.ActivityID)
+                    .HasForeignKey(d => d.ActivityId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ActivitySyncBatch_Activity");
             });
@@ -94,11 +92,10 @@ namespace WaitTime.Entities
             modelBuilder.Entity<ActivitySyncBatchLocation>(entity =>
             {
                 entity.ToTable("ActivitySyncBatchLocation");
-                entity.Property(e => e.ActivitySyncBatchLocationID).HasColumnName("ActivitySyncBatchLocationID");
 
                 entity.HasOne(e => e.Batch)
                     .WithMany(e => e.Locations)
-                    .HasForeignKey(d => d.ActivitySyncBatchID)
+                    .HasForeignKey(d => d.ActivitySyncBatchId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ActivitySyncBatchLocation_ActivitySyncBatch");
             });

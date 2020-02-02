@@ -9,13 +9,14 @@ namespace WaitTime.Models
     public class ActivitySyncRequestModel
     {
         public string Source { get; set; }
+        public DateTimeOffset StartDateTime { get; set; }
         public List<ActivitySyncBatchModel> Batches { get; set; }
     }
 
     public class ActivitySyncBatchModel
     {
-        public Guid ActivitySyncBatchID { get; set; }
-        public Guid ActivityID { get; set; }
+        public Guid ActivitySyncBatchId { get; set; }
+        public Guid ActivityId { get; set; }
         public int BatchNbr { get; set; }
         [JsonProperty("locations")]
         public double?[,] LocationsArray { get; set; }

@@ -12,8 +12,8 @@ namespace WaitTime.Entities
             Locations = new HashSet<ActivitySyncBatchLocation>();
         }
 
-        public Guid ActivitySyncBatchID { get; set; }
-        public Guid ActivityID { get; set; }
+        public Guid ActivitySyncBatchId { get; set; }
+        public Guid ActivityId { get; set; }
         public int BatchNbr { get; set; }
 
         public Activity Activity { get; set; }
