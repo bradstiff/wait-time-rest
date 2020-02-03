@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WaitTime.Entities
+namespace WaitTime.Models
 {
-    public class Activity
+    public class ActivitiesResponse
     {
-        public Activity()
-        {
-            Batches = new HashSet<ActivitySyncBatch>();
-        }
+        public List<ActivityResponse> Activities { get; set; }
+    }
 
+    public class ActivityResponse
+    {
         public Guid ActivityId { get; set; }
         public string Name { get; set; }
         public DateTimeOffset StartDateTime { get; set; }
@@ -25,8 +25,6 @@ namespace WaitTime.Entities
         public float AverageSpeedMps { get; set; }
         public short RunsCount { get; set; }
         public Guid UserId { get; set; }
-        public byte SourceTypeId { get; set; }
-
-        public ICollection<ActivitySyncBatch> Batches { get; set; }
+        public string Source { get; set; }
     }
 }

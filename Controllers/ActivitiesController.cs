@@ -26,13 +26,52 @@ namespace wait_time.Controllers
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        [HttpGet]
+        [Route("feed/{userId}")]
+        [ProducesResponseType(typeof(ActivitiesResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.InternalServerError)]
+        public async Task<IActionResult> GetFeed(Guid userId)
+        {
+            try
+            {
+                var activities = await _context.Activities.Where(a => a.UserId == userId).ToListAsync();
+                var response = new ActivitiesResponse() {
+                    Activities = activities.Select(a => new ActivityResponse()
+                    {
+                        ActivityId = a.ActivityId,
+                        Name = a.Name,
+                        StartDateTime = a.StartDateTime,
+                        EndDateTime = a.EndDateTime,
+                        TotalTimeSeconds = a.TotalTimeSeconds,
+                        SkiTimeSeconds = a.SkiTimeSeconds,
+                        VerticalMeters = a.VerticalMeters,
+                        MaxAltitudeMeters = a.MaxAltitudeMeters,
+                        DistanceMeters = a.DistanceMeters,
+                        TopSpeedMps = a.TopSpeedMps,
+                        AverageSpeedMps = a.AverageSpeedMps,
+                        RunsCount = a.RunsCount,
+                        UserId = a.UserId,
+                        Source = ((ActivitySourceTypeEnum)a.SourceTypeId).ToString()
+                    }).ToList()
+                };
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error retrieving feed", e);
+                _logger.LogError("Error retrieving feed", e);
+                return ErrorResponse.AsStatusCodeResult(HttpStatusCode.InternalServerError, "Error retrieving feed");
+            }
+        }
+
         [HttpPut]
         [ValidateModel]
         [Route("sync/{userId}")]
         [ProducesResponseType(typeof(SuccessResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> SyncUserActivityBatches(Guid userId, [FromBody] ActivitySyncRequestModel model)
+        public async Task<IActionResult> SyncUserActivityBatches(Guid userId, [FromBody] DataSyncRequestModel model)
         {
             try
             {
@@ -40,17 +79,20 @@ namespace wait_time.Controllers
                     : model.Source?.Equals("iOS", StringComparison.InvariantCultureIgnoreCase) == true ? ActivitySourceTypeEnum.iOS
                     : throw new ArgumentOutOfRangeException(nameof(model.Source));
 
-                foreach (var activityBatches in model.Batches.GroupBy(b => b.ActivityId))
+                foreach (var activityBatches in model.Batches.GroupBy(b => Tuple.Create(b.ActivityId, b.StartDateTime)))
                 {
+                    var activityId = activityBatches.Key.Item1;
+
                     //get or create activity
-                    var activity = await _context.Activities.SingleOrDefaultAsync(a => a.ActivityId == activityBatches.Key);
+                    var activity = await _context.Activities.SingleOrDefaultAsync(a => a.ActivityId == activityId);
                     if (activity == null)
                     {
                         activity = new Activity
                         {
-                            ActivityId = activityBatches.Key,
+                            ActivityId = activityId,
+                            StartDateTime = activityBatches.Key.Item2,
                             UserId = userId,
-                            SourceTypeId = (byte)sourceTypeID
+                            SourceTypeId = (byte)sourceTypeID,
                         };
                         _context.Activities.Add(activity);
                     }
@@ -104,7 +146,7 @@ namespace wait_time.Controllers
             {
                 Console.WriteLine("Error processing batch", e);
                 _logger.LogError("Error processing batch", e);
-                return ErrorResponse.AsStatusCodeResult(HttpStatusCode.InternalServerError, "Error processing batch}");
+                return ErrorResponse.AsStatusCodeResult(HttpStatusCode.InternalServerError, "Error processing batch");
             }
         }
 
@@ -125,11 +167,11 @@ namespace wait_time.Controllers
                 activity.EndDateTime = model.EndDateTime;
                 activity.TotalTimeSeconds = model.TotalTimeSeconds;
                 activity.SkiTimeSeconds = model.SkiTimeSeconds;
-                activity.VerticalFeet = model.VerticalFeet;
-                activity.MaxAltitudeFeet = model.MaxAltitudeFeet;
-                activity.DistanceMiles = model.DistanceMiles;
-                activity.TopSpeedMph = model.TopSpeedMph;
-                activity.AverageSpeedMph = model.AverageSpeedMph;
+                activity.VerticalMeters = model.VerticalMeters;
+                activity.MaxAltitudeMeters = model.MaxAltitudeMeters;
+                activity.DistanceMeters = model.DistanceMeters;
+                activity.TopSpeedMps = model.TopSpeedMps;
+                activity.AverageSpeedMps = model.AverageSpeedMps;
                 activity.RunsCount = model.RunsCount;
                 activity.UserId = model.UserId;
                 activity.SourceTypeId = (byte)(model.Source?.Equals("Android", StringComparison.InvariantCultureIgnoreCase) == true ? ActivitySourceTypeEnum.Android
@@ -141,9 +183,9 @@ namespace wait_time.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error processing batch", e);
-                _logger.LogError("Error processing batch", e);
-                return ErrorResponse.AsStatusCodeResult(HttpStatusCode.InternalServerError, "Error processing batch}");
+                Console.WriteLine("Error saving activity", e);
+                _logger.LogError("Error saving activity", e);
+                return ErrorResponse.AsStatusCodeResult(HttpStatusCode.InternalServerError, "Error saving activity");
             }
         }
     }
