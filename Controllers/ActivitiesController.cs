@@ -79,9 +79,9 @@ namespace wait_time.Controllers
                     : model.Source?.Equals("iOS", StringComparison.InvariantCultureIgnoreCase) == true ? ActivitySourceTypeEnum.iOS
                     : throw new ArgumentOutOfRangeException(nameof(model.Source));
 
-                foreach (var activityBatches in model.Batches.GroupBy(b => Tuple.Create(b.ActivityId, b.StartDateTime)))
+                foreach (var activityBatches in model.Batches.GroupBy(b => b.ActivityId))
                 {
-                    var activityId = activityBatches.Key.Item1;
+                    var activityId = activityBatches.Key;
 
                     //get or create activity
                     var activity = await _context.Activities.SingleOrDefaultAsync(a => a.ActivityId == activityId);
@@ -90,7 +90,6 @@ namespace wait_time.Controllers
                         activity = new Activity
                         {
                             ActivityId = activityId,
-                            StartDateTime = activityBatches.Key.Item2,
                             UserId = userId,
                             SourceTypeId = (byte)sourceTypeID,
                         };

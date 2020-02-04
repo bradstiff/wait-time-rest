@@ -16,7 +16,6 @@ namespace WaitTime.Models
     {
         public Guid ActivitySyncBatchId { get; set; }
         public Guid ActivityId { get; set; }
-        public DateTimeOffset StartDateTime { get; set; }
         public int BatchNbr { get; set; }
         [JsonProperty("locations")]
         public double?[,] LocationsArray { get; set; }
