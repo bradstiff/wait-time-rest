@@ -37,24 +37,27 @@ namespace wait_time.Controllers
             {
                 var activities = await _context.Activities.Where(a => a.UserId == userId).ToListAsync();
                 var response = new ActivitiesResponse() {
-                    Activities = activities.Select(a => new ActivityResponse()
-                    {
-                        ActivityId = a.ActivityId,
-                        Name = a.Name,
-                        StartDateTime = a.StartDateTime,
-                        EndDateTime = a.EndDateTime,
-                        TotalTimeSeconds = a.TotalTimeSeconds,
-                        SkiTimeSeconds = a.SkiTimeSeconds,
-                        VerticalMeters = a.VerticalMeters,
-                        MaxAltitudeMeters = a.MaxAltitudeMeters,
-                        DistanceMeters = a.DistanceMeters,
-                        TopSpeedMps = a.TopSpeedMps,
-                        AverageSpeedMps = a.AverageSpeedMps,
-                        RunsCount = a.RunsCount,
-                        UserId = a.UserId,
-                        Source = ((ActivitySourceTypeEnum)a.SourceTypeId).ToString(),
-                        Timestamp = a.Timestamp,
-                    }).ToList()
+                    Activities = activities
+                        .Select(a => new ActivityResponse()
+                        {
+                            ActivityId = a.ActivityId,
+                            Name = a.Name,
+                            StartDateTime = a.StartDateTime,
+                            EndDateTime = a.EndDateTime,
+                            TotalTimeSeconds = a.TotalTimeSeconds,
+                            SkiTimeSeconds = a.SkiTimeSeconds,
+                            VerticalMeters = a.VerticalMeters,
+                            MaxAltitudeMeters = a.MaxAltitudeMeters,
+                            DistanceMeters = a.DistanceMeters,
+                            TopSpeedMps = a.TopSpeedMps,
+                            AverageSpeedMps = a.AverageSpeedMps,
+                            RunsCount = a.RunsCount,
+                            UserId = a.UserId,
+                            Source = ((ActivitySourceTypeEnum)a.SourceTypeId).ToString(),
+                            Timestamp = a.Timestamp,
+                        })
+                        .OrderBy(a => a.StartDateTime)
+                        .ToList()
                 };
                 return Ok(response);
             }
