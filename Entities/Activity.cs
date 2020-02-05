@@ -26,7 +26,7 @@ namespace WaitTime.Entities
         public short RunsCount { get; set; }
         public Guid UserId { get; set; }
         public byte SourceTypeId { get; set; }
-
+        public int Timestamp { get; set; }
         public ICollection<ActivitySyncBatch> Batches { get; set; }
     }
 }

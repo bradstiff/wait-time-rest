@@ -20,5 +20,6 @@ namespace WaitTime.Models
         public short RunsCount { get; set; }
         public Guid UserId { get; set; }
         public string Source { get; set; }
+        public int Timestamp { get; set; }
     }
 }

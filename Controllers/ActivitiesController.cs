@@ -52,7 +52,8 @@ namespace wait_time.Controllers
                         AverageSpeedMps = a.AverageSpeedMps,
                         RunsCount = a.RunsCount,
                         UserId = a.UserId,
-                        Source = ((ActivitySourceTypeEnum)a.SourceTypeId).ToString()
+                        Source = ((ActivitySourceTypeEnum)a.SourceTypeId).ToString(),
+                        Timestamp = a.Timestamp,
                     }).ToList()
                 };
                 return Ok(response);
@@ -176,6 +177,7 @@ namespace wait_time.Controllers
                 activity.SourceTypeId = (byte)(model.Source?.Equals("Android", StringComparison.InvariantCultureIgnoreCase) == true ? ActivitySourceTypeEnum.Android
                     : model.Source?.Equals("iOS", StringComparison.InvariantCultureIgnoreCase) == true ? ActivitySourceTypeEnum.iOS
                     : throw new ArgumentOutOfRangeException(nameof(model.Source)));
+                activity.Timestamp = model.Timestamp;
 
                 await _context.SaveChangesAsync();
                 return Ok(new SuccessResponse());
