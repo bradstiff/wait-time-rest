@@ -120,8 +120,8 @@ namespace wait_time.Controllers
                             .Range(0, array.GetLength(0))
                             .Select(row => new ActivitySyncBatchLocation
                             {
-                                Latitude = (float)(array[row, 0] ?? 0),
-                                Longitude = (float)(array[row, 1] ?? 0),
+                                Latitude = (double)(array[row, 0] ?? 0),
+                                Longitude = (double)(array[row, 1] ?? 0),
                                 Accuracy = (float)(array[row, 2] ?? 0),
                                 Altitude = (float)(array[row, 3] ?? 0),
                                 AltitudeAccuracy = (float)(array[row, 4]),
