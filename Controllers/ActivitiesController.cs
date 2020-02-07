@@ -168,13 +168,13 @@ namespace wait_time.Controllers
                 activity.Name = model.Name;
                 activity.StartDateTime = model.StartDateTime;
                 activity.EndDateTime = model.EndDateTime;
-                activity.TotalTimeSeconds = model.TotalTimeSeconds;
-                activity.SkiTimeSeconds = model.SkiTimeSeconds;
-                activity.VerticalMeters = model.VerticalMeters;
-                activity.MaxAltitudeMeters = model.MaxAltitudeMeters;
-                activity.DistanceMeters = model.DistanceMeters;
-                activity.TopSpeedMps = model.TopSpeedMps;
-                activity.AverageSpeedMps = model.AverageSpeedMps;
+                activity.TotalTimeSeconds = Convert.ToInt32(model.TotalTimeSeconds);
+                activity.SkiTimeSeconds = Convert.ToInt32(model.SkiTimeSeconds);
+                activity.VerticalMeters = Convert.ToInt32(model.VerticalMeters);
+                activity.MaxAltitudeMeters = Convert.ToInt32(model.MaxAltitudeMeters);
+                activity.DistanceMeters = Convert.ToSingle(model.DistanceMeters);
+                activity.TopSpeedMps = Convert.ToSingle(model.TopSpeedMps);
+                activity.AverageSpeedMps = Convert.ToSingle(model.AverageSpeedMps);
                 activity.RunsCount = model.RunsCount;
                 activity.UserId = model.UserId;
                 activity.SourceTypeId = (byte)(model.Source?.Equals("Android", StringComparison.InvariantCultureIgnoreCase) == true ? ActivitySourceTypeEnum.Android
