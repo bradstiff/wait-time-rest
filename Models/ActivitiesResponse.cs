@@ -17,10 +17,11 @@ namespace WaitTime.Models
         public DateTimeOffset StartDateTime { get; set; }
         public DateTimeOffset EndDateTime { get; set; }
         public int TotalTimeSeconds { get; set; }
+        public float TotalDistanceMeters { get; set; }
         public int SkiTimeSeconds { get; set; }
-        public int VerticalMeters { get; set; }
+        public float SkiDistanceMeters { get; set; }
+        public int SkiVerticalMeters { get; set; }
         public int MaxAltitudeMeters { get; set; }
-        public float DistanceMeters { get; set; }
         public float TopSpeedMps { get; set; }
         public float AverageSpeedMps { get; set; }
         public short RunsCount { get; set; }

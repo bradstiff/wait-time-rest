@@ -45,10 +45,11 @@ namespace wait_time.Controllers
                             StartDateTime = a.StartDateTime,
                             EndDateTime = a.EndDateTime,
                             TotalTimeSeconds = a.TotalTimeSeconds,
+                            TotalDistanceMeters = a.TotalDistanceMeters,
                             SkiTimeSeconds = a.SkiTimeSeconds,
-                            VerticalMeters = a.VerticalMeters,
+                            SkiDistanceMeters = a.SkiDistanceMeters,
+                            SkiVerticalMeters = a.SkiVerticalMeters,
                             MaxAltitudeMeters = a.MaxAltitudeMeters,
-                            DistanceMeters = a.DistanceMeters,
                             TopSpeedMps = a.TopSpeedMps,
                             AverageSpeedMps = a.AverageSpeedMps,
                             RunsCount = a.RunsCount,
@@ -169,10 +170,11 @@ namespace wait_time.Controllers
                 activity.StartDateTime = model.StartDateTime;
                 activity.EndDateTime = model.EndDateTime;
                 activity.TotalTimeSeconds = Convert.ToInt32(model.TotalTimeSeconds);
+                activity.TotalDistanceMeters = Convert.ToSingle(model.TotalDistanceMeters);
                 activity.SkiTimeSeconds = Convert.ToInt32(model.SkiTimeSeconds);
-                activity.VerticalMeters = Convert.ToInt32(model.VerticalMeters);
+                activity.SkiDistanceMeters = Convert.ToSingle(model.SkiDistanceMeters);
+                activity.SkiVerticalMeters = Convert.ToInt32(model.SkiVerticalMeters);
                 activity.MaxAltitudeMeters = Convert.ToInt32(model.MaxAltitudeMeters);
-                activity.DistanceMeters = Convert.ToSingle(model.DistanceMeters);
                 activity.TopSpeedMps = Convert.ToSingle(model.TopSpeedMps);
                 activity.AverageSpeedMps = Convert.ToSingle(model.AverageSpeedMps);
                 activity.RunsCount = model.RunsCount;
