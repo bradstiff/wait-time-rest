@@ -28,38 +28,19 @@ namespace wait_time.Controllers
 
         [HttpGet]
         [Route("feed/{userId}")]
-        [ProducesResponseType(typeof(ActivitiesResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<ActivityModel>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> GetFeed(Guid userId)
         {
             try
             {
-                var activities = await _context.Activities.Where(a => a.UserId == userId).ToListAsync();
-                var response = new ActivitiesResponse() {
-                    Activities = activities
-                        .Select(a => new ActivityResponse()
-                        {
-                            ActivityId = a.ActivityId,
-                            Name = a.Name,
-                            StartDateTime = a.StartDateTime,
-                            EndDateTime = a.EndDateTime,
-                            TotalTimeSeconds = a.TotalTimeSeconds,
-                            TotalDistanceMeters = a.TotalDistanceMeters,
-                            SkiTimeSeconds = a.SkiTimeSeconds,
-                            SkiDistanceMeters = a.SkiDistanceMeters,
-                            SkiVerticalMeters = a.SkiVerticalMeters,
-                            MaxAltitudeMeters = a.MaxAltitudeMeters,
-                            TopSpeedMps = a.TopSpeedMps,
-                            AverageSpeedMps = a.AverageSpeedMps,
-                            RunsCount = a.RunsCount,
-                            UserId = a.UserId,
-                            Source = ((ActivitySourceTypeEnum)a.SourceTypeId).ToString(),
-                            Timestamp = a.Timestamp,
-                        })
-                        .OrderBy(a => a.StartDateTime)
-                        .ToList()
-                };
+                var response = await _context
+                    .Activities
+                    .Where(a => a.UserId == userId)
+                    .OrderByDescending(a => a.StartDateTime)
+                    .Select(a => Responses.Activity(a))
+                    .ToListAsync();
                 return Ok(response);
             }
             catch (Exception e)
@@ -67,6 +48,36 @@ namespace wait_time.Controllers
                 Console.WriteLine("Error retrieving feed", e);
                 _logger.LogError("Error retrieving feed", e);
                 return ErrorResponse.AsStatusCodeResult(HttpStatusCode.InternalServerError, "Error retrieving feed");
+            }
+        }
+
+        [HttpGet]
+        [Route("{activityId}")]
+        [ProducesResponseType(typeof(ActivityModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.InternalServerError)]
+        public async Task<IActionResult> GetActivity(Guid activityId)
+        {
+            try
+            {
+                var activity = await _context
+                    .Activities
+                    .Include(a => a.Segments)
+                    .Include(a => a.Locations)
+                    .Where(a => a.ActivityId == activityId)
+                    .FirstOrDefaultAsync();
+
+                if (activity == null)
+                {
+                    return NotFound();
+                }
+                return Ok(Responses.Activity(activity));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error retrieving activity", e);
+                _logger.LogError("Error retrieving activity", e);
+                return ErrorResponse.AsStatusCodeResult(HttpStatusCode.InternalServerError, "Error retrieving activity");
             }
         }
 
@@ -117,9 +128,10 @@ namespace wait_time.Controllers
                             Console.WriteLine(error);
                             throw new ArgumentOutOfRangeException(nameof(model), error);
                         }
-                        var locations = Enumerable
+
+                        foreach(var location in Enumerable
                             .Range(0, array.GetLength(0))
-                            .Select(row => new ActivitySyncBatchLocation
+                            .Select(row => new ActivityLocation
                             {
                                 Latitude = (double)(array[row, 0] ?? 0),
                                 Longitude = (double)(array[row, 1] ?? 0),
@@ -131,13 +143,15 @@ namespace wait_time.Controllers
                                 Speed = (float)(array[row, 7] ?? 0),
                                 SpeedAccuracy = (float)(array[row, 8] ?? 0),
                                 Timestamp = (double)(array[row, 9] ?? 0),
-                            }).ToList();
+                            }))
+                        {
+                            activity.Locations.Add(location);
+                        }
 
                         batch = new ActivitySyncBatch
                         {
                             ActivitySyncBatchId = syncBatch.ActivitySyncBatchId,
                             BatchNbr = syncBatch.BatchNbr,
-                            Locations = locations
                         };
                         activity.Batches.Add(batch);
                     }

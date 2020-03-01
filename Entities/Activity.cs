@@ -10,6 +10,8 @@ namespace WaitTime.Entities
         public Activity()
         {
             Batches = new HashSet<ActivitySyncBatch>();
+            Locations = new HashSet<ActivityLocation>();
+            Segments = new HashSet<ActivitySegment>();
         }
 
         public Guid ActivityId { get; set; }
@@ -28,6 +30,9 @@ namespace WaitTime.Entities
         public Guid UserId { get; set; }
         public byte SourceTypeId { get; set; }
         public int Timestamp { get; set; }
+
         public ICollection<ActivitySyncBatch> Batches { get; set; }
+        public ICollection<ActivityLocation> Locations { get; set; }
+        public ICollection<ActivitySegment> Segments { get; set; }
     }
 }

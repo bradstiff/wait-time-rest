@@ -11,7 +11,8 @@ namespace WaitTime.Entities
         public virtual DbSet<Uplift> Uplifts { get; set; }
         public virtual DbSet<Activity> Activities { get; set; }
         public virtual DbSet<ActivitySyncBatch> ActivitySyncBatches { get; set; }
-        public virtual DbSet<ActivitySyncBatchLocation> ActivitySyncBatchLocations { get; set; }
+        public virtual DbSet<ActivityLocation> ActivityLocations { get; set; }
+        public virtual DbSet<ActivitySegment> ActivitySegments { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -89,15 +90,26 @@ namespace WaitTime.Entities
                     .HasConstraintName("FK_ActivitySyncBatch_Activity");
             });
 
-            modelBuilder.Entity<ActivitySyncBatchLocation>(entity =>
+            modelBuilder.Entity<ActivityLocation>(entity =>
             {
-                entity.ToTable("ActivitySyncBatchLocation");
+                entity.ToTable("ActivityLocation");
 
-                entity.HasOne(e => e.Batch)
+                entity.HasOne(e => e.Activity)
                     .WithMany(e => e.Locations)
-                    .HasForeignKey(d => d.ActivitySyncBatchId)
+                    .HasForeignKey(d => d.ActivityId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ActivitySyncBatchLocation_ActivitySyncBatch");
+                    .HasConstraintName("FK_ActivityLocation_Activity");
+            });
+
+            modelBuilder.Entity<ActivitySegment>(entity =>
+            {
+                entity.ToTable("ActivitySegment");
+
+                entity.HasOne(e => e.Activity)
+                    .WithMany(e => e.Segments)
+                    .HasForeignKey(d => d.ActivityId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ActivitySegment_Activity");
             });
         }
     }

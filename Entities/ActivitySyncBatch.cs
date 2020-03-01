@@ -7,16 +7,10 @@ namespace WaitTime.Entities
 {
     public class ActivitySyncBatch
     {
-        public ActivitySyncBatch()
-        {
-            Locations = new HashSet<ActivitySyncBatchLocation>();
-        }
-
         public Guid ActivitySyncBatchId { get; set; }
         public Guid ActivityId { get; set; }
         public int BatchNbr { get; set; }
 
         public Activity Activity { get; set; }
-        public ICollection<ActivitySyncBatchLocation> Locations { get; set; }
     }
 }
