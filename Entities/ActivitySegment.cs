@@ -13,11 +13,13 @@ namespace WaitTime.Entities
         public double EndTimestamp { get; set; }
         public int TotalTimeSeconds { get; set; }
         public int MovingTimeSeconds { get; set; }
+        public int VerticalMeters { get; set; }
         public float StartAltitude { get; set; }
         public float EndAltitude { get; set; }
         public float DistanceMeters { get; set; }
-        public float TopSpeedMps { get; set; }
+        public float MaxSpeedMps { get; set; }
         public float AverageSpeedMps { get; set; }
+        public float MaxGradeDegrees { get; set; }
         public bool IsRun { get; set; }
         public Activity Activity { get; set; }
     }

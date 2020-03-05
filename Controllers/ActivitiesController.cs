@@ -188,10 +188,15 @@ namespace wait_time.Controllers
                 activity.SkiTimeSeconds = Convert.ToInt32(model.SkiTimeSeconds);
                 activity.SkiDistanceMeters = Convert.ToSingle(model.SkiDistanceMeters);
                 activity.SkiVerticalMeters = Convert.ToInt32(model.SkiVerticalMeters);
-                activity.MaxAltitudeMeters = Convert.ToInt32(model.MaxAltitudeMeters);
-                activity.TopSpeedMps = Convert.ToSingle(model.TopSpeedMps);
+                activity.AscentTimeSeconds = Convert.ToInt32(model.AscentTimeSeconds);
+                activity.AscentDistanceMeters = Convert.ToSingle(model.AscentDistanceMeters);
+                activity.AscentVerticalMeters = Convert.ToInt32(model.AscentVerticalMeters);
+                activity.MaxSpeedMps = Convert.ToSingle(model.MaxSpeedMps);
                 activity.AverageSpeedMps = Convert.ToSingle(model.AverageSpeedMps);
+                activity.MaxAltitudeMeters = Convert.ToInt32(model.MaxAltitudeMeters);
+                activity.MaxGradeDegrees = Convert.ToSingle(model.MaxGradeDegrees);
                 activity.RunsCount = model.RunsCount;
+                activity.Timestamp = model.Timestamp;
                 activity.UserId = model.UserId;
                 activity.SourceTypeId = (byte)(model.Source?.Equals("Android", StringComparison.InvariantCultureIgnoreCase) == true ? ActivitySourceTypeEnum.Android
                     : model.Source?.Equals("iOS", StringComparison.InvariantCultureIgnoreCase) == true ? ActivitySourceTypeEnum.iOS

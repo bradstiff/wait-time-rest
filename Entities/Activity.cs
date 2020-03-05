@@ -23,13 +23,17 @@ namespace WaitTime.Entities
         public int SkiTimeSeconds { get; set; }
         public float SkiDistanceMeters { get; set; }
         public int SkiVerticalMeters { get; set; }
-        public int MaxAltitudeMeters { get; set; }
-        public float TopSpeedMps { get; set; }
+        public int AscentTimeSeconds { get; set; }
+        public float AscentDistanceMeters { get; set; }
+        public int AscentVerticalMeters { get; set; }
+        public float MaxSpeedMps { get; set; }
         public float AverageSpeedMps { get; set; }
+        public int MaxAltitudeMeters { get; set; }
+        public float MaxGradeDegrees { get; set; }
         public short RunsCount { get; set; }
         public Guid UserId { get; set; }
         public byte SourceTypeId { get; set; }
-        public int Timestamp { get; set; }
+        public double Timestamp { get; set; }
 
         public ICollection<ActivitySyncBatch> Batches { get; set; }
         public ICollection<ActivityLocation> Locations { get; set; }
