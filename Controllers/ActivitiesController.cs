@@ -203,6 +203,25 @@ namespace wait_time.Controllers
                     : throw new ArgumentOutOfRangeException(nameof(model.Source)));
                 activity.Timestamp = model.Timestamp;
 
+                activity.Segments = model
+                    .Segments.Select(s => new ActivitySegment
+                    {
+                        Name = s.Name,
+                        StartTimestamp = s.StartTimestamp,
+                        EndTimestamp = s.EndTimestamp,
+                        TotalTimeSeconds = s.TotalTimeSeconds,
+                        MovingTimeSeconds = s.MovingTimeSeconds,
+                        VerticalMeters = s.VerticalMeters,
+                        StartAltitude = s.StartAltitude,
+                        EndAltitude = s.EndAltitude,
+                        DistanceMeters  = s.DistanceMeters,
+                        MaxSpeedMps = s.MaxSpeedMps,
+                        AverageSpeedMps = s.AverageSpeedMps,
+                        MaxGradeDegrees = s.MaxGradeDegrees,
+                        IsRun = s.IsRun
+                    })
+                    .ToList();
+
                 await _context.SaveChangesAsync();
                 return Ok(new SuccessResponse());
             }
