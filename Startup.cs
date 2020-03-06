@@ -41,6 +41,7 @@ namespace WaitTime
             {
                 o.Providers.Add<GzipDecompressionProvider>();
             });
+            services.AddResponseCompression();
 
             services.AddMvc();
 
@@ -65,6 +66,7 @@ namespace WaitTime
             app.UseSpaStaticFiles();
 
             app.UseRequestDecompression();
+            app.UseResponseCompression();
 
             app.UseMvc(routes =>
             {

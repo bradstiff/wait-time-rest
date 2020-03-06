@@ -49,6 +49,7 @@ namespace WaitTime.Models
                         MaxGradeDegrees = s.MaxGradeDegrees,
                         IsRun = s.IsRun
                     })
+                    .OrderBy(s => s.StartTimestamp)
                     .ToList(),
                 Locations = activity.Locations?
                     .Select(l => new ActivityLocationModel
@@ -57,6 +58,7 @@ namespace WaitTime.Models
                         Longitude = l.Longitude,
                         Timestamp = l.Timestamp,
                     })
+                    .OrderBy(l => l.Timestamp)
                     .ToList(),
             };
         }
