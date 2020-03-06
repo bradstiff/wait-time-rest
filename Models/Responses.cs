@@ -55,7 +55,6 @@ namespace WaitTime.Models
                     {
                         Latitude = l.Latitude,
                         Longitude = l.Longitude,
-                        Altitude = l.Altitude,
                         Timestamp = l.Timestamp,
                     })
                     .ToList(),
