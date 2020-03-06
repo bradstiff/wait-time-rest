@@ -65,6 +65,7 @@ namespace WaitTime.Models
 
     public class ActivitySegmentModel
     {
+        public int ActivitySegmentId { get; set; }
         public string Name { get; set; }
         public double StartTimestamp { get; set; }
         public double EndTimestamp { get; set; }

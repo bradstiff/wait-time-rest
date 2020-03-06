@@ -34,6 +34,7 @@ namespace WaitTime.Models
                 Segments = activity.Segments?
                     .Select(s => new ActivitySegmentModel
                     {
+                        ActivitySegmentId = s.ActivitySegmentId,
                         Name = s.Name,
                         StartTimestamp = s.StartTimestamp,
                         EndTimestamp = s.EndTimestamp,
