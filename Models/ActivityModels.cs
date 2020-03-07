@@ -50,7 +50,7 @@ namespace WaitTime.Models
         public short RunsCount { get; set; }
         public Guid UserId { get; set; }
         public double Timestamp { get; set; }
-
+        public double[,] LocationsArray { get; set; }
         public IList<ActivityLocationModel> Locations { get; set; }
         public IList<ActivitySegmentModel> Segments { get; set; }
     }
