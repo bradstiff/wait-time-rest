@@ -10,30 +10,30 @@ namespace WaitTime.Models
     {
         public static ActivityModel Activity(Activity activity)
         {
-            var locations = activity.Locations?.ToArray();
-            var locationCount = locations?.Length ?? 0;
-            double[,] locationsArray = new double[locationCount, 3];
-            for (int i = 0; i < locationCount; i++)
-            {
-                var location = locations[i];
-                for (int j = 0; j < 3; j++)
-                {
-                    double value;
-                    switch (j)
-                    {
-                        case 0:
-                            value = location.Latitude;
-                            break;
-                        case 1:
-                            value = location.Longitude;
-                            break;
-                        default:
-                            value = location.Timestamp;
-                            break;
-                    }
-                    locationsArray[i, j] = value;
-                }
-            }
+            //var locations = activity.Locations?.ToArray();
+            //var locationCount = locations?.Length ?? 0;
+            //double[,] locationsArray = new double[locationCount, 3];
+            //for (int i = 0; i < locationCount; i++)
+            //{
+            //    var location = locations[i];
+            //    for (int j = 0; j < 3; j++)
+            //    {
+            //        double value;
+            //        switch (j)
+            //        {
+            //            case 0:
+            //                value = location.Latitude;
+            //                break;
+            //            case 1:
+            //                value = location.Longitude;
+            //                break;
+            //            default:
+            //                value = location.Timestamp;
+            //                break;
+            //        }
+            //        locationsArray[i, j] = value;
+            //    }
+            //}
 
             return new ActivityModel
             {
@@ -76,16 +76,16 @@ namespace WaitTime.Models
                     })
                     .OrderBy(s => s.StartTimestamp)
                     .ToList(),
-                //Locations = activity.Locations?
-                //    .Select(l => new ActivityLocationModel
-                //    {
-                //        Latitude = l.Latitude,
-                //        Longitude = l.Longitude,
-                //        Timestamp = l.Timestamp,
-                //    })
-                //    .OrderBy(l => l.Timestamp)
-                //    .ToList(),
-                LocationsArray = locationsArray,
+                Locations = activity.Locations?
+                    .Select(l => new ActivityLocationModel
+                    {
+                        Latitude = l.Latitude,
+                        Longitude = l.Longitude,
+                        Timestamp = l.Timestamp,
+                    })
+                    .OrderBy(l => l.Timestamp)
+                    .ToList(),
+                //LocationsArray = locationsArray,
             };
         }
     }
