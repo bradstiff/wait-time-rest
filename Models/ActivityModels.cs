@@ -23,9 +23,9 @@ namespace WaitTime.Models
         public double MaxAltitudeMeters { get; set; }
         public double MaxGradeDegrees { get; set; }
         public short RunsCount { get; set; }
+        public double Timestamp { get; set; }
         public Guid UserId { get; set; }
         public string Source { get; set; }
-        public double Timestamp { get; set; }
         public IList<ActivitySegmentModel> Segments { get; set; }
     }
 
@@ -48,8 +48,9 @@ namespace WaitTime.Models
         public int MaxAltitudeMeters { get; set; }
         public float MaxGradeDegrees { get; set; }
         public short RunsCount { get; set; }
-        public Guid UserId { get; set; }
         public double Timestamp { get; set; }
+        public Guid UserId { get; set; }
+        public string Source { get; set; }
         public double[,] LocationsArray { get; set; }
         public IList<ActivityLocationModel> Locations { get; set; }
         public IList<ActivitySegmentModel> Segments { get; set; }

@@ -196,7 +196,6 @@ namespace wait_time.Controllers
                 activity.MaxAltitudeMeters = Convert.ToInt32(model.MaxAltitudeMeters);
                 activity.MaxGradeDegrees = Convert.ToSingle(model.MaxGradeDegrees);
                 activity.RunsCount = model.RunsCount;
-                activity.Timestamp = model.Timestamp;
                 activity.UserId = model.UserId;
                 activity.SourceTypeId = (byte)(model.Source?.Equals("Android", StringComparison.InvariantCultureIgnoreCase) == true ? ActivitySourceTypeEnum.Android
                     : model.Source?.Equals("iOS", StringComparison.InvariantCultureIgnoreCase) == true ? ActivitySourceTypeEnum.iOS
