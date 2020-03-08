@@ -55,6 +55,7 @@ namespace WaitTime.Models
                 MaxGradeDegrees = activity.MaxGradeDegrees,
                 RunsCount = activity.RunsCount,
                 UserId = activity.UserId,
+                Source = ((ActivitySourceTypeEnum)activity.SourceTypeId).ToString(),
                 Timestamp = activity.Timestamp,
                 Segments = activity.Segments?
                     .Select(s => new ActivitySegmentModel
