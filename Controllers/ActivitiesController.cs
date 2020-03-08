@@ -203,7 +203,7 @@ namespace wait_time.Controllers
                 activity.Timestamp = model.Timestamp;
 
                 activity.Segments = model
-                    .Segments.Select(s => new ActivitySegment
+                    .Segments?.Select(s => new ActivitySegment
                     {
                         Name = s.Name,
                         StartTimestamp = s.StartTimestamp,
