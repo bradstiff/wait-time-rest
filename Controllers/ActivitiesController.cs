@@ -163,7 +163,7 @@ namespace wait_time.Controllers
             catch (Exception e)
             {
                 Console.WriteLine("Error processing batch", e);
-                _logger.LogError("Error processing batch", e);
+                _logger.LogError("Error processing batch", e.ToString());
                 return ErrorResponse.AsStatusCodeResult(HttpStatusCode.InternalServerError, "Error processing batch");
             }
         }
@@ -227,7 +227,7 @@ namespace wait_time.Controllers
             catch (Exception e)
             {
                 Console.WriteLine("Error saving activity", e);
-                _logger.LogError("Error saving activity", e);
+                _logger.LogError("Error saving activity", e.ToString());
                 return ErrorResponse.AsStatusCodeResult(HttpStatusCode.InternalServerError, "Error saving activity");
             }
         }
