@@ -46,7 +46,7 @@ namespace wait_time.Controllers
             catch (Exception e)
             {
                 Console.WriteLine("Error retrieving feed", e);
-                _logger.LogError("Error retrieving feed", e);
+                _logger.LogError(e, "Error retrieving feed");
                 return ErrorResponse.AsStatusCodeResult(HttpStatusCode.InternalServerError, "Error retrieving feed");
             }
         }
@@ -76,7 +76,7 @@ namespace wait_time.Controllers
             catch (Exception e)
             {
                 Console.WriteLine("Error retrieving activity", e);
-                _logger.LogError("Error retrieving activity", e);
+                _logger.LogError(e, "Error retrieving activity");
                 return ErrorResponse.AsStatusCodeResult(HttpStatusCode.InternalServerError, "Error retrieving activity");
             }
         }
@@ -163,7 +163,7 @@ namespace wait_time.Controllers
             catch (Exception e)
             {
                 Console.WriteLine("Error processing batch", e);
-                _logger.LogError("Error processing batch", e.ToString());
+                _logger.LogError(e, "Error processing batch");
                 return ErrorResponse.AsStatusCodeResult(HttpStatusCode.InternalServerError, "Error processing batch");
             }
         }
@@ -227,7 +227,7 @@ namespace wait_time.Controllers
             catch (Exception e)
             {
                 Console.WriteLine("Error saving activity", e);
-                _logger.LogError("Error saving activity", e.ToString());
+                _logger.LogError(e, "Error saving activity");
                 return ErrorResponse.AsStatusCodeResult(HttpStatusCode.InternalServerError, "Error saving activity");
             }
         }
