@@ -181,6 +181,7 @@ namespace wait_time.Controllers
                 var activity = await _context.Activities.SingleAsync(a => a.ActivityId == activityId);
 
                 activity.Name = model.Name;
+                activity.TypeId = (byte)Enum.Parse<ActivityTypeEnum>(model.ActivityType, true);
                 activity.StartDateTime = model.StartDateTime;
                 activity.EndDateTime = model.EndDateTime;
                 activity.TotalTimeSeconds = Convert.ToInt32(model.TotalTimeSeconds);
@@ -197,9 +198,7 @@ namespace wait_time.Controllers
                 activity.MaxGradeDegrees = Convert.ToSingle(model.MaxGradeDegrees);
                 activity.RunsCount = model.RunsCount;
                 activity.UserId = model.UserId;
-                activity.SourceTypeId = (byte)(model.Source?.Equals("Android", StringComparison.InvariantCultureIgnoreCase) == true ? ActivitySourceTypeEnum.Android
-                    : model.Source?.Equals("iOS", StringComparison.InvariantCultureIgnoreCase) == true ? ActivitySourceTypeEnum.iOS
-                    : throw new ArgumentOutOfRangeException(nameof(model.Source)));
+                activity.SourceTypeId = (byte)Enum.Parse<ActivitySourceTypeEnum>(model.Source, true);
                 activity.Timestamp = model.Timestamp;
 
                 activity.Segments = model

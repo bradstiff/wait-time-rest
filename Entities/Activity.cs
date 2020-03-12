@@ -16,6 +16,7 @@ namespace WaitTime.Entities
 
         public Guid ActivityId { get; set; }
         public string Name { get; set; }
+        public byte TypeId { get; set; }
         public DateTimeOffset StartDateTime { get; set; }
         public DateTimeOffset EndDateTime { get; set; }
         public int TotalTimeSeconds { get; set; }

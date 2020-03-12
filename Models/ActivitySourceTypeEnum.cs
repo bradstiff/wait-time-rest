@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace WaitTime.Models
+﻿namespace WaitTime.Models
 {
     public enum ActivitySourceTypeEnum : byte
     {

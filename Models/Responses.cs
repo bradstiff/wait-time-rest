@@ -39,6 +39,7 @@ namespace WaitTime.Models
             {
                 ActivityId = activity.ActivityId,
                 Name = activity.Name,
+                ActivityType = ((ActivityTypeEnum)activity.TypeId).ToString(),
                 StartDateTime = activity.StartDateTime,
                 EndDateTime = activity.EndDateTime,
                 TotalTimeSeconds = activity.TotalTimeSeconds,

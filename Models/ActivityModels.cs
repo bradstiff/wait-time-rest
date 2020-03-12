@@ -8,6 +8,7 @@ namespace WaitTime.Models
     public class ActivitySaveRequestModel
     {
         public string Name { get; set; }
+        public string ActivityType { get; set; }
         public DateTimeOffset StartDateTime { get; set; }
         public DateTimeOffset EndDateTime { get; set; }
         public double TotalTimeSeconds { get; set; }
@@ -32,6 +33,7 @@ namespace WaitTime.Models
     public class ActivityModel
     {
         public Guid ActivityId { get; set; }
+        public string ActivityType { get; set; }
         public string Name { get; set; }
         public DateTimeOffset StartDateTime { get; set; }
         public DateTimeOffset EndDateTime { get; set; }
