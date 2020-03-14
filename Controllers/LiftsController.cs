@@ -27,7 +27,7 @@ namespace wait_time.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(List<Lift>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<LiftModel>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> GetNearby([FromQuery] double latitude, [FromQuery] double longitude)
@@ -35,11 +35,12 @@ namespace wait_time.Controllers
             try
             {
                 var rect = Geometry.GetRect(latitude, longitude, 10000);
-                var response = await _context
+                var lifts = await _context
                     .Lifts
-                    .Where(l => l.Point1Latitude >= rect.StartLatitude && l.Point1Latitude <= rect.EndLatitude && l.Point1Longitude >= rect.StartLongitude && l.Point1Longitude <= rect.EndLongitude)
+                    .Where(l => !l.IsHidden && l.Point1Latitude >= rect.StartLatitude && l.Point1Latitude <= rect.EndLatitude && l.Point1Longitude >= rect.StartLongitude && l.Point1Longitude <= rect.EndLongitude)
+                    .Select(l => Responses.Lift(l))
                     .ToListAsync();
-                return Ok(response);
+                return Ok(lifts);
             }
             catch (Exception e)
             {

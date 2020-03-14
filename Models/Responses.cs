@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WaitTime.Components;
 using WaitTime.Entities;
 
 namespace WaitTime.Models
@@ -88,6 +89,37 @@ namespace WaitTime.Models
                     .OrderBy(l => l.Timestamp)
                     .ToList(),
                 //LocationsArray = locationsArray,
+            };
+        }
+
+        public static LiftModel Lift(Lift lift)
+        {
+            IEnumerable<Coordinate> getCoordinates()
+            {
+                yield return new Coordinate(lift.Point1Latitude, lift.Point1Longitude);
+                yield return new Coordinate(lift.Point2Latitude, lift.Point2Longitude);
+                if (lift.Point3Latitude.HasValue)
+                {
+                    yield return new Coordinate(lift.Point3Latitude.Value, lift.Point3Longitude.Value);
+                }
+                if (lift.Point4Latitude.HasValue)
+                {
+                    yield return new Coordinate(lift.Point4Latitude.Value, lift.Point4Longitude.Value);
+                }
+                if (lift.Point5Latitude.HasValue)
+                {
+                    yield return new Coordinate(lift.Point5Latitude.Value, lift.Point5Longitude.Value);
+                }
+            }
+
+            return new LiftModel
+            {
+                LiftId = lift.LiftID,
+                Name = lift.Name,
+                LiftType = ((LiftTypeEnum)lift.TypeId).GetDescription(),
+                Occupancy = lift.Occupancy,
+                Resort = null,
+                Coordinates = getCoordinates().ToList(),
             };
         }
     }
