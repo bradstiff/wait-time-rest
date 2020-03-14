@@ -91,9 +91,7 @@ namespace wait_time.Controllers
         {
             try
             {
-                var sourceTypeID = model.Source?.Equals("Android", StringComparison.InvariantCultureIgnoreCase) == true ? ActivitySourceTypeEnum.Android
-                    : model.Source?.Equals("iOS", StringComparison.InvariantCultureIgnoreCase) == true ? ActivitySourceTypeEnum.iOS
-                    : throw new ArgumentOutOfRangeException(nameof(model.Source));
+                var sourceTypeID = Enum.Parse<ActivitySourceTypeEnum>(model.Source, true);
 
                 foreach (var activityBatches in model.Batches.GroupBy(b => b.ActivityId))
                 {
