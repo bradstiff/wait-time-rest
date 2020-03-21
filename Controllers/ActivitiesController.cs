@@ -37,6 +37,7 @@ namespace wait_time.Controllers
             try
             {
                 var activities = await _context.Activities
+                    .Include(a => a.Locations)
                     .Where(a => a.UserId == userId)
                     .OrderByDescending(a => a.StartDateTime)
                     .Select(a => Responses.Activity(a))
@@ -72,10 +73,6 @@ namespace wait_time.Controllers
                 {
                     return NotFound();
                 }
-
-                var points = activity.Locations.ToList();
-                var reduced = TrackSimplifier.Simplify(points, 0.00003);
-                Debug.WriteLine($"Points: {points.Count}, Reduced: {reduced.Count}");
 
                 return Ok(Responses.Activity(activity));
             }

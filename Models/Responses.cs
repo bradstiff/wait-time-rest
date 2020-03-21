@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using WaitTime.Components;
 using WaitTime.Entities;
@@ -36,11 +37,15 @@ namespace WaitTime.Models
             //    }
             //}
 
+            var locations = TrackSimplifier.Simplify(activity.Locations?.ToList(), 0.00003);
+            var polyline = WebUtility.UrlEncode(Geometry.Encode(locations));
+
             return new ActivityModel
             {
                 ActivityId = activity.ActivityId,
                 Name = activity.Name,
                 ActivityType = ((ActivityTypeEnum)activity.TypeId).ToString(),
+                ImageUrl = $"https://api.mapbox.com/styles/v1/mapbox/streets-v10/static/path-2+44f-1({polyline})/auto/800x400@2x?access_token=pk.eyJ1IjoiYnJhZHN0aWZmIiwiYSI6ImNrODI2MHFoNjB4ODIzbGxudmwwbnZrOHUifQ.17nFSlgt8O9-mFOpeiqMhg",
                 StartDateTime = activity.StartDateTime,
                 EndDateTime = activity.EndDateTime,
                 TotalTimeSeconds = activity.TotalTimeSeconds,
@@ -79,7 +84,7 @@ namespace WaitTime.Models
                     })
                     .OrderBy(s => s.StartTimestamp)
                     .ToList(),
-                Locations = TrackSimplifier.Simplify(activity.Locations?.ToList(), 0.00003)
+                Locations = locations
                     .Select(l => new ActivityLocationModel
                     {
                         Latitude = l.Latitude,
