@@ -79,7 +79,7 @@ namespace WaitTime.Models
                     })
                     .OrderBy(s => s.StartTimestamp)
                     .ToList(),
-                Locations = activity.Locations?
+                Locations = TrackSimplifier.Simplify(activity.Locations?.ToList(), 0.00005)
                     .Select(l => new ActivityLocationModel
                     {
                         Latitude = l.Latitude,

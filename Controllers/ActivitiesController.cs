@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -35,13 +36,13 @@ namespace wait_time.Controllers
         {
             try
             {
-                var response = await _context
-                    .Activities
+                var activities = await _context.Activities
                     .Where(a => a.UserId == userId)
                     .OrderByDescending(a => a.StartDateTime)
                     .Select(a => Responses.Activity(a))
                     .ToListAsync();
-                return Ok(response);
+
+                return Ok(activities);
             }
             catch (Exception e)
             {
@@ -71,6 +72,11 @@ namespace wait_time.Controllers
                 {
                     return NotFound();
                 }
+
+                var points = activity.Locations.ToList();
+                var reduced = TrackSimplifier.Simplify(points, 0.00005);
+                Debug.WriteLine($"Points: {points.Count}, Reduced: {reduced.Count}");
+
                 return Ok(Responses.Activity(activity));
             }
             catch (Exception e)
@@ -101,7 +107,7 @@ namespace wait_time.Controllers
                     var activity = await _context.Activities.SingleOrDefaultAsync(a => a.ActivityId == activityId);
                     if (activity == null)
                     {
-                        activity = new Activity
+                        activity = new WaitTime.Entities.Activity
                         {
                             ActivityId = activityId,
                             UserId = userId,
