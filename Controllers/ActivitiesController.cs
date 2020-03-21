@@ -74,7 +74,7 @@ namespace wait_time.Controllers
                 }
 
                 var points = activity.Locations.ToList();
-                var reduced = TrackSimplifier.Simplify(points, 0.00001);
+                var reduced = TrackSimplifier.Simplify(points, 0.00003);
                 Debug.WriteLine($"Points: {points.Count}, Reduced: {reduced.Count}");
 
                 return Ok(Responses.Activity(activity));
