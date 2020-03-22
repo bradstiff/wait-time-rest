@@ -35,6 +35,7 @@ namespace WaitTime.Models
         public Guid ActivityId { get; set; }
         public string ActivityType { get; set; }
         public string Name { get; set; }
+        public string ThumbnailUrl { get; set; }
         public string ImageUrl { get; set; }
         public DateTimeOffset StartDateTime { get; set; }
         public DateTimeOffset EndDateTime { get; set; }

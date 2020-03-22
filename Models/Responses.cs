@@ -46,6 +46,7 @@ namespace WaitTime.Models
                 ActivityId = activity.ActivityId,
                 Name = activity.Name,
                 ActivityType = ((ActivityTypeEnum)activity.TypeId).ToString(),
+                ThumbnailUrl = $"https://api.mapbox.com/styles/v1/mapbox/streets-v10/static/path-2+44f-1({polyline})/auto/450x300@2x?access_token=pk.eyJ1IjoiYnJhZHN0aWZmIiwiYSI6ImNrODI2MHFoNjB4ODIzbGxudmwwbnZrOHUifQ.17nFSlgt8O9-mFOpeiqMhg",
                 ImageUrl = $"https://api.mapbox.com/styles/v1/mapbox/outdoors-v11/static/path-2+44f-1({polyline})/auto/900x600@2x?access_token=pk.eyJ1IjoiYnJhZHN0aWZmIiwiYSI6ImNrODI2MHFoNjB4ODIzbGxudmwwbnZrOHUifQ.17nFSlgt8O9-mFOpeiqMhg",
                 StartDateTime = activity.StartDateTime,
                 EndDateTime = activity.EndDateTime,
