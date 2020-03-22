@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace WaitTime.Models
 {
     public static class Responses
     {
-        public static ActivityModel Activity(Activity activity)
+        public static ActivityModel Activity(Entities.Activity activity)
         {
             //var locations = activity.Locations?.ToArray();
             //var locationCount = locations?.Length ?? 0;
@@ -37,15 +38,15 @@ namespace WaitTime.Models
             //    }
             //}
 
-            var locations = TrackSimplifier.Simplify(activity.Locations?.ToList(), 0.00003);
+            var locations = TrackSimplifier.Simplify(activity.Locations?.ToList(), 0.00005);
             var polyline = WebUtility.UrlEncode(Geometry.Encode(locations));
-
+            Debug.WriteLine($"Activity {activity.Name} Polyline length {polyline.Length}");
             return new ActivityModel
             {
                 ActivityId = activity.ActivityId,
                 Name = activity.Name,
                 ActivityType = ((ActivityTypeEnum)activity.TypeId).ToString(),
-                ImageUrl = $"https://api.mapbox.com/styles/v1/mapbox/streets-v10/static/path-2+44f-1({polyline})/auto/800x400@2x?access_token=pk.eyJ1IjoiYnJhZHN0aWZmIiwiYSI6ImNrODI2MHFoNjB4ODIzbGxudmwwbnZrOHUifQ.17nFSlgt8O9-mFOpeiqMhg",
+                ImageUrl = $"https://api.mapbox.com/styles/v1/mapbox/outdoors-v11/static/path-2+44f-1({polyline})/auto/900x600@2x?access_token=pk.eyJ1IjoiYnJhZHN0aWZmIiwiYSI6ImNrODI2MHFoNjB4ODIzbGxudmwwbnZrOHUifQ.17nFSlgt8O9-mFOpeiqMhg",
                 StartDateTime = activity.StartDateTime,
                 EndDateTime = activity.EndDateTime,
                 TotalTimeSeconds = activity.TotalTimeSeconds,
