@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,26 +21,31 @@ namespace wait_time.Controllers
     public class ActivitiesController : ControllerBase
     {
         private readonly ILogger _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly WaitTimeContext _context;
 
-        public ActivitiesController(WaitTimeContext context, ILogger<ActivitiesController> logger)
+        private string UserId => User.Claims.First(c => c.Type == "user_id").Value;
+
+        public ActivitiesController(WaitTimeContext context, IHttpContextAccessor httpContextAccessor, ILogger<ActivitiesController> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         [HttpGet]
-        [Route("feed/{userId}")]
+        [Route("feed")]
+        [Authorize]
         [ProducesResponseType(typeof(List<ActivityModel>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> GetFeed(Guid userId)
+        public async Task<IActionResult> GetFeed()
         {
             try
             {
                 var activities = await _context.Activities
                     .Include(a => a.Locations)
-                    .Where(a => a.UserId == userId)
+                    .Where(a => a.UserId == UserId)
                     .OrderByDescending(a => a.StartDateTime)
                     .Select(a => Responses.Activity(a))
                     .ToListAsync();
@@ -55,6 +62,7 @@ namespace wait_time.Controllers
 
         [HttpGet]
         [Route("{activityId}")]
+        [Authorize]
         [ProducesResponseType(typeof(ActivityModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.InternalServerError)]
@@ -86,11 +94,12 @@ namespace wait_time.Controllers
 
         [HttpPut]
         [ValidateModel]
-        [Route("sync/{userId}")]
+        [Route("sync")]
+        [Authorize]
         [ProducesResponseType(typeof(SuccessResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> SyncUserActivityBatches(Guid userId, [FromBody] DataSyncRequestModel model)
+        public async Task<IActionResult> SyncUserActivityBatches([FromBody] DataSyncRequestModel model)
         {
             try
             {
@@ -107,7 +116,7 @@ namespace wait_time.Controllers
                         activity = new WaitTime.Entities.Activity
                         {
                             ActivityId = activityId,
-                            UserId = userId,
+                            UserId = this.UserId,
                             SourceTypeId = (byte)sourceTypeID,
                         };
                         _context.Activities.Add(activity);
@@ -125,7 +134,7 @@ namespace wait_time.Controllers
                         var array = syncBatch.LocationsArray;
                         if (array.GetLength(1) != 10)
                         {
-                            var error = $"Activity {syncBatch.ActivityId}, Batch {syncBatch.BatchNbr} for User {userId}: Locations array has the wrong number of columns. Expected 10 columns, found {array.GetLength(1)}.";
+                            var error = $"Activity {syncBatch.ActivityId}, Batch {syncBatch.BatchNbr} for User {UserId}: Locations array has the wrong number of columns. Expected 10 columns, found {array.GetLength(1)}.";
                             Console.WriteLine(error);
                             throw new ArgumentOutOfRangeException(nameof(model), error);
                         }
@@ -172,6 +181,7 @@ namespace wait_time.Controllers
         [HttpPut]
         [ValidateModel]
         [Route("{activityId}")]
+        [Authorize]
         [ProducesResponseType(typeof(SuccessResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.InternalServerError)]
@@ -198,7 +208,7 @@ namespace wait_time.Controllers
                 activity.MaxAltitudeMeters = Convert.ToInt32(model.MaxAltitudeMeters);
                 activity.MaxGradeDegrees = Convert.ToSingle(model.MaxGradeDegrees);
                 activity.RunsCount = model.RunsCount;
-                activity.UserId = model.UserId;
+                activity.UserId = this.UserId;
                 activity.SourceTypeId = (byte)Enum.Parse<ActivitySourceTypeEnum>(model.Source, true);
                 activity.Timestamp = model.Timestamp;
 

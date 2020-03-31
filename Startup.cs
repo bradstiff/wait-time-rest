@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using Rollbar.AspNetCore;
 using WaitTime.Entities;
 using Anemonis.AspNetCore.RequestDecompression;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace WaitTime
 {
@@ -43,6 +45,21 @@ namespace WaitTime
             });
             services.AddResponseCompression();
 
+            services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.Authority = "https://securetoken.google.com/we-ski";
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = "https://securetoken.google.com/we-ski",
+                        ValidateAudience = true,
+                        ValidAudience = "we-ski",
+                        ValidateLifetime = true
+                    };
+                });
+
             services.AddMvc();
 
             // React app production build static file location
@@ -67,6 +84,8 @@ namespace WaitTime
 
             app.UseRequestDecompression();
             app.UseResponseCompression();
+
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {

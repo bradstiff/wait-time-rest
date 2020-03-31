@@ -32,7 +32,7 @@ namespace WaitTime.Entities
         public int MaxAltitudeMeters { get; set; }
         public float MaxGradeDegrees { get; set; }
         public short RunsCount { get; set; }
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
         public byte SourceTypeId { get; set; }
         public double Timestamp { get; set; }
 
