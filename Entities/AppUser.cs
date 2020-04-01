@@ -20,6 +20,7 @@ namespace WaitTime.Entities
         public string City { get; set; }
         public string Region { get; set; }
         public string Country { get; set; }
+        public string PhotoUrl { get; set; }
         public byte? DefaultActivityTypeId { get; set; }
 
         public ICollection<Activity> Activities { get; set; }

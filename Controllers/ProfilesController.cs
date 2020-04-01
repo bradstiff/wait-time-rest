@@ -54,6 +54,7 @@ namespace wait_time.Controllers
                     City = user.City,
                     Region = user.Region,
                     Country = user.Country,
+                    PhotoUrl = user.PhotoUrl,
                     DefaultActivityType = ((ActivityTypeEnum)(user.DefaultActivityTypeId ?? (byte)ActivityTypeEnum.Ski)).ToString(),
                 };
 
@@ -92,6 +93,7 @@ namespace wait_time.Controllers
                 user.City = model.City;
                 user.Region = model.Region;
                 user.Country = model.Country;
+                user.PhotoUrl = model.PhotoUrl;
                 user.DefaultActivityTypeId = (byte)Enum.Parse<ActivityTypeEnum>(model.DefaultActivityType ?? "Ski", true);
 
                 await _context.SaveChangesAsync();

@@ -11,7 +11,7 @@ namespace WaitTime.Models
 {
     public static class Responses
     {
-        public static ActivityModel Activity(Entities.Activity activity)
+        public static ActivityModel Activity(Entities.Activity activity, AppUser user)
         {
             //var locations = activity.Locations?.ToArray();
             //var locationCount = locations?.Length ?? 0;
@@ -48,6 +48,8 @@ namespace WaitTime.Models
                 ActivityType = ((ActivityTypeEnum)activity.TypeId).ToString(),
                 ThumbnailUrl = $"https://api.mapbox.com/styles/v1/bradstiff/ck82jifv21bd01iphcban53j2/static/path-2+44f-1({polyline})/auto/450x300@2x?access_token=pk.eyJ1IjoiYnJhZHN0aWZmIiwiYSI6ImNrODI2MHFoNjB4ODIzbGxudmwwbnZrOHUifQ.17nFSlgt8O9-mFOpeiqMhg",
                 ImageUrl = $"https://api.mapbox.com/styles/v1/bradstiff/ck82jifv21bd01iphcban53j2/static/path-2+44f-1({polyline})/auto/900x600@2x?access_token=pk.eyJ1IjoiYnJhZHN0aWZmIiwiYSI6ImNrODI2MHFoNjB4ODIzbGxudmwwbnZrOHUifQ.17nFSlgt8O9-mFOpeiqMhg",
+                Athlete = $"{user.FirstName} {user.LastName}",
+                AthletePhotoUrl = user.PhotoUrl,
                 StartDateTime = activity.StartDateTime,
                 EndDateTime = activity.EndDateTime,
                 TotalTimeSeconds = activity.TotalTimeSeconds,
@@ -63,7 +65,6 @@ namespace WaitTime.Models
                 MaxAltitudeMeters = activity.MaxAltitudeMeters,
                 MaxGradeDegrees = activity.MaxGradeDegrees,
                 RunsCount = activity.RunsCount,
-                UserId = activity.UserId,
                 Source = ((ActivitySourceTypeEnum)activity.SourceTypeId).ToString(),
                 Timestamp = activity.Timestamp,
                 Segments = activity.Segments?

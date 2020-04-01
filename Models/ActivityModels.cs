@@ -36,6 +36,8 @@ namespace WaitTime.Models
         public string Name { get; set; }
         public string ThumbnailUrl { get; set; }
         public string ImageUrl { get; set; }
+        public string Athlete { get; set; }
+        public string AthletePhotoUrl { get; set; }
         public DateTimeOffset StartDateTime { get; set; }
         public DateTimeOffset EndDateTime { get; set; }
         public int TotalTimeSeconds { get; set; }
@@ -52,7 +54,6 @@ namespace WaitTime.Models
         public float MaxGradeDegrees { get; set; }
         public short RunsCount { get; set; }
         public double Timestamp { get; set; }
-        public string UserId { get; set; }
         public string Source { get; set; }
         public double[,] LocationsArray { get; set; }
         public IList<ActivityLocationModel> Locations { get; set; }

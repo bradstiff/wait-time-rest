@@ -44,13 +44,14 @@ namespace wait_time.Controllers
             try
             {
                 var activities = await _context.Activities
-                    .Include(a => a.Locations)
                     .Where(a => a.UserId == UserId)
                     .OrderByDescending(a => a.StartDateTime)
-                    .Select(a => Responses.Activity(a))
                     .ToListAsync();
+                var userIds = activities.Select(a => a.UserId).Distinct();
+                var users = await _context.Users.Where(u => userIds.Contains(u.UserId)).ToDictionaryAsync(u => u.UserId);
+                var response = activities.Select(a => Responses.Activity(a, users[a.UserId]));
 
-                return Ok(activities);
+                return Ok(response);
             }
             catch (Exception e)
             {
@@ -82,7 +83,8 @@ namespace wait_time.Controllers
                     return NotFound();
                 }
 
-                return Ok(Responses.Activity(activity));
+                var user = await _context.Users.FindAsync(activity.UserId);
+                return Ok(Responses.Activity(activity, user));
             }
             catch (Exception e)
             {
