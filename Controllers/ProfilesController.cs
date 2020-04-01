@@ -34,7 +34,7 @@ namespace wait_time.Controllers
 
         [HttpGet]
         [Route("{userId}")]
-        //[Authorize]
+        [Authorize]
         [ProducesResponseType(typeof(ProfileResponseModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.InternalServerError)]
@@ -70,7 +70,7 @@ namespace wait_time.Controllers
         [HttpPut]
         [ValidateModel]
         [Route("")]
-        //[Authorize]
+        [Authorize]
         [ProducesResponseType(typeof(SuccessResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.InternalServerError)]
