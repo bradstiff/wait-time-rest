@@ -44,6 +44,7 @@ namespace wait_time.Controllers
             try
             {
                 var activities = await _context.Activities
+                    .Include(a => a.Locations)
                     .Where(a => a.UserId == UserId)
                     .OrderByDescending(a => a.StartDateTime)
                     .ToListAsync();
