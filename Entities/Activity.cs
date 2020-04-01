@@ -39,5 +39,7 @@ namespace WaitTime.Entities
         public ICollection<ActivitySyncBatch> Batches { get; set; }
         public ICollection<ActivityLocation> Locations { get; set; }
         public ICollection<ActivitySegment> Segments { get; set; }
+
+        public AppUser User { get; set; }
     }
 }

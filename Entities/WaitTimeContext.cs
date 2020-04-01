@@ -13,12 +13,12 @@ namespace WaitTime.Entities
         public virtual DbSet<ActivitySyncBatch> ActivitySyncBatches { get; set; }
         public virtual DbSet<ActivityLocation> ActivityLocations { get; set; }
         public virtual DbSet<ActivitySegment> ActivitySegments { get; set; }
+        public virtual DbSet<AppUser> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseSqlServer(@"Server=(local)\SQL2012;Database=LiftLines;Trusted_Connection=True;");
             }
         }
@@ -77,6 +77,11 @@ namespace WaitTime.Entities
             modelBuilder.Entity<Activity>(entity =>
             {
                 entity.ToTable("Activity");
+
+                entity.HasOne(e => e.User)
+                    .WithMany(e => e.Activities)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("FK_Activity_AppUser");
             });
 
             modelBuilder.Entity<ActivitySyncBatch>(entity =>
@@ -110,6 +115,13 @@ namespace WaitTime.Entities
                     .HasForeignKey(d => d.ActivityId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ActivitySegment_Activity");
+            });
+
+            modelBuilder.Entity<AppUser>(entity =>
+            {
+                entity.ToTable("AppUser");
+
+                entity.HasKey(e => e.UserId); //can't be inferred by convention
             });
         }
     }
