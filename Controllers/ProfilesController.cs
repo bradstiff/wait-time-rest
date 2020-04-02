@@ -68,6 +68,45 @@ namespace wait_time.Controllers
             }
         }
 
+        [HttpPost]
+        [ValidateModel]
+        [Route("signin")]
+        [Authorize]
+        [ProducesResponseType(typeof(SuccessResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.InternalServerError)]
+        public async Task<IActionResult> SignIn([FromBody] ProfileSaveRequestModel model)
+        {
+            try
+            {
+                var user = await _context.Users.SingleOrDefaultAsync(a => a.UserId == UserId);
+                if (user == null)
+                {
+                    user = new AppUser { UserId = this.UserId };
+                    user.FirstName = model.FirstName;
+                    user.LastName = model.LastName;
+                    user.Email = model.Email;
+                    user.Gender = model.Gender;
+                    user.City = model.City;
+                    user.Region = model.Region;
+                    user.Country = model.Country;
+                    user.PhotoUrl = model.PhotoUrl;
+                    user.DefaultActivityTypeId = (byte)Enum.Parse<ActivityTypeEnum>(model.DefaultActivityType ?? "Ski", true);
+                    _context.Users.Add(user);
+
+                    await _context.SaveChangesAsync();
+                }
+
+                return Ok(new SuccessResponse());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error signing in", e);
+                _logger.LogError(e, "Error siging in");
+                return ErrorResponse.AsStatusCodeResult(HttpStatusCode.InternalServerError, "Error siging in");
+            }
+        }
+
         [HttpPut]
         [ValidateModel]
         [Route("")]
