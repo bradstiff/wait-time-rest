@@ -81,6 +81,7 @@ namespace WaitTime.Entities
                 entity.HasOne(e => e.User)
                     .WithMany(e => e.Activities)
                     .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_Activity_AppUser");
             });
 
@@ -91,7 +92,7 @@ namespace WaitTime.Entities
                 entity.HasOne(e => e.Activity)
                     .WithMany(e => e.Batches)
                     .HasForeignKey(d => d.ActivityId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_ActivitySyncBatch_Activity");
             });
 
@@ -102,7 +103,7 @@ namespace WaitTime.Entities
                 entity.HasOne(e => e.Activity)
                     .WithMany(e => e.Locations)
                     .HasForeignKey(d => d.ActivityId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_ActivityLocation_Activity");
             });
 
@@ -113,7 +114,7 @@ namespace WaitTime.Entities
                 entity.HasOne(e => e.Activity)
                     .WithMany(e => e.Segments)
                     .HasForeignKey(d => d.ActivityId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_ActivitySegment_Activity");
             });
 

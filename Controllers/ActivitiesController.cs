@@ -244,5 +244,34 @@ namespace wait_time.Controllers
                 return ErrorResponse.AsStatusCodeResult(HttpStatusCode.InternalServerError, "Error saving activity");
             }
         }
+
+
+        [HttpDelete]
+        [ValidateModel]
+        [Route("{activityId}")]
+        [Authorize]
+        [ProducesResponseType(typeof(SuccessResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.InternalServerError)]
+        public async Task<IActionResult> DeleteActivity(Guid activityId)
+        {
+            try
+            {
+                var activity = await _context.Activities
+                    .Include(a => a.Segments)
+                    .Include(a => a.Locations)
+                    .Include(a => a.Batches)
+                    .SingleAsync(a => a.ActivityId == activityId);
+                _context.Activities.Remove(activity);
+                await _context.SaveChangesAsync();
+                return Ok(new SuccessResponse());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error deleting activity", e);
+                _logger.LogError(e, "Error deleting activity");
+                return ErrorResponse.AsStatusCodeResult(HttpStatusCode.InternalServerError, "Error deleting activity");
+            }
+        }
     }
 }
