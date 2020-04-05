@@ -214,7 +214,7 @@ namespace wait_time.Controllers
                 activity.RunsCount = model.RunsCount;
                 activity.UserId = this.UserId;
                 activity.SourceTypeId = (byte)Enum.Parse<ActivitySourceTypeEnum>(model.Source, true);
-                activity.Timestamp = model.Timestamp;
+                activity.Timestamp = model.StartDateTime.ToUnixTimeMilliseconds();
 
                 activity.Segments = model
                     .Segments?.Select(s => new ActivitySegment
