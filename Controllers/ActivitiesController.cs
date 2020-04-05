@@ -44,7 +44,6 @@ namespace wait_time.Controllers
             try
             {
                 var activities = await _context.Activities
-                    .Include(a => a.Locations)
                     .Where(a => a.UserId == UserId)
                     .OrderByDescending(a => a.StartDateTime)
                     .ToListAsync();
@@ -192,7 +191,9 @@ namespace wait_time.Controllers
         {
             try
             {
-                var activity = await _context.Activities.SingleAsync(a => a.ActivityId == activityId);
+                var activity = await _context.Activities
+                    .Include(a => a.Locations)
+                    .SingleAsync(a => a.ActivityId == activityId);
 
                 activity.Name = model.Name;
                 activity.TypeId = (byte)Enum.Parse<ActivityTypeEnum>(model.ActivityType, true);
@@ -233,6 +234,10 @@ namespace wait_time.Controllers
                         IsRun = s.IsRun
                     })
                     .ToList();
+
+                var locations = TrackSimplifier.Simplify(activity.Locations.ToList(), 0.00005);
+                var polyline = WebUtility.UrlEncode(Geometry.Encode(locations));
+                activity.Polyline = polyline;
 
                 await _context.SaveChangesAsync();
                 return Ok(new SuccessResponse());

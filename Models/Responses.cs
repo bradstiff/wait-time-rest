@@ -39,15 +39,13 @@ namespace WaitTime.Models
             //}
 
             var locations = TrackSimplifier.Simplify(activity.Locations?.ToList(), 0.00005);
-            var polyline = WebUtility.UrlEncode(Geometry.Encode(locations));
-            Debug.WriteLine($"Activity {activity.Name} Polyline length {polyline.Length}");
             return new ActivityModel
             {
                 ActivityId = activity.ActivityId,
                 Name = activity.Name,
                 ActivityType = ((ActivityTypeEnum)activity.TypeId).ToString(),
-                ThumbnailUrl = $"https://api.mapbox.com/styles/v1/bradstiff/ck82jifv21bd01iphcban53j2/static/path-2+44f-1({polyline})/auto/450x300@2x?access_token=pk.eyJ1IjoiYnJhZHN0aWZmIiwiYSI6ImNrODI2MHFoNjB4ODIzbGxudmwwbnZrOHUifQ.17nFSlgt8O9-mFOpeiqMhg",
-                ImageUrl = $"https://api.mapbox.com/styles/v1/bradstiff/ck82jifv21bd01iphcban53j2/static/path-2+44f-1({polyline})/auto/900x600@2x?access_token=pk.eyJ1IjoiYnJhZHN0aWZmIiwiYSI6ImNrODI2MHFoNjB4ODIzbGxudmwwbnZrOHUifQ.17nFSlgt8O9-mFOpeiqMhg",
+                ThumbnailUrl = $"https://api.mapbox.com/styles/v1/bradstiff/ck82jifv21bd01iphcban53j2/static/path-2+44f-1({activity.Polyline})/auto/450x300@2x?access_token=pk.eyJ1IjoiYnJhZHN0aWZmIiwiYSI6ImNrODI2MHFoNjB4ODIzbGxudmwwbnZrOHUifQ.17nFSlgt8O9-mFOpeiqMhg",
+                ImageUrl = $"https://api.mapbox.com/styles/v1/bradstiff/ck82jifv21bd01iphcban53j2/static/path-2+44f-1({activity.Polyline})/auto/900x600@2x?access_token=pk.eyJ1IjoiYnJhZHN0aWZmIiwiYSI6ImNrODI2MHFoNjB4ODIzbGxudmwwbnZrOHUifQ.17nFSlgt8O9-mFOpeiqMhg",
                 Athlete = $"{user.FirstName} {user.LastName}",
                 AthletePhotoUrl = user.PhotoUrl,
                 StartDateTime = activity.StartDateTime,

@@ -35,6 +35,7 @@ namespace WaitTime.Entities
         public string UserId { get; set; }
         public byte SourceTypeId { get; set; }
         public double Timestamp { get; set; }
+        public string Polyline { get; set; }
 
         public ICollection<ActivitySyncBatch> Batches { get; set; }
         public ICollection<ActivityLocation> Locations { get; set; }
