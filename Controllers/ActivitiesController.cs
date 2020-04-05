@@ -45,7 +45,7 @@ namespace wait_time.Controllers
             {
                 var activities = await _context.Activities
                     .Where(a => a.UserId == UserId)
-                    .OrderByDescending(a => a.StartDateTime)
+                    .OrderByDescending(a => a.Timestamp)
                     .ToListAsync();
                 var userIds = activities.Select(a => a.UserId).Distinct();
                 var users = await _context.Users.Where(u => userIds.Contains(u.UserId)).ToDictionaryAsync(u => u.UserId);
@@ -214,7 +214,7 @@ namespace wait_time.Controllers
                 activity.RunsCount = model.RunsCount;
                 activity.UserId = this.UserId;
                 activity.SourceTypeId = (byte)Enum.Parse<ActivitySourceTypeEnum>(model.Source, true);
-                activity.Timestamp = Convert.ToDouble(model.StartDateTime.ToUnixTimeMilliseconds());
+                activity.Timestamp = model.Timestamp;
 
                 activity.Segments = model
                     .Segments?.Select(s => new ActivitySegment
