@@ -38,7 +38,7 @@ namespace WaitTime.Models
             //    }
             //}
 
-            var locations = TrackSimplifier.Simplify(activity.Locations?.ToList(), 0.00005);
+            var locations = TrackSimplifier.Simplify(activity.Locations?.ToList(), 0.00001);
             return new ActivityModel
             {
                 ActivityId = activity.ActivityId,
