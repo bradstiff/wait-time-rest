@@ -235,7 +235,7 @@ namespace wait_time.Controllers
                     })
                     .ToList();
 
-                var locations = TrackSimplifier.Simplify(activity.Locations.ToList(), 0.00005);
+                var locations = TrackSimplifier.Simplify(activity.Locations.OrderBy(l => l.Timestamp).ToList(), 0.00005);
                 var polyline = WebUtility.UrlEncode(Geometry.Encode(locations));
                 activity.Polyline = polyline;
 
