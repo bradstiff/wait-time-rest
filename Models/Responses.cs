@@ -145,12 +145,14 @@ namespace WaitTime.Models
                 DefaultActivityType = ((ActivityTypeEnum)(user.DefaultActivityTypeId ?? (byte)ActivityTypeEnum.Ski)).ToString(),
                 Seasons = activities
                     .GroupBy(a => Season.FromDate(a.StartDateTime))
+                    .OrderByDescending(s => s.Key)
                     .Select(s => new SeasonSummaryModel
                     {
                         SeasonName = s.Key.Name,
                         SkiDays = s.Count(),
                         SkiDistanceMeters = s.Sum(a => a.SkiDistanceMeters),
                         SkiVerticalMeters = s.Sum(a => a.SkiVerticalMeters),
+                        MaxSpeedMps = s.Max(a => a.MaxSpeedMps),
                     })
                     .ToList()
             };
