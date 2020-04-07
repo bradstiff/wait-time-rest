@@ -42,5 +42,7 @@ namespace WaitTime.Entities
         public ICollection<ActivitySegment> Segments { get; set; }
 
         public AppUser User { get; set; }
+
+
     }
 }

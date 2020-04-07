@@ -128,5 +128,32 @@ namespace WaitTime.Models
                 Coordinates = getCoordinates().ToList(),
             };
         }
+
+        public static ProfileResponseModel Profile(AppUser user, List<Entities.Activity> activities)
+        {
+            return new ProfileResponseModel
+            {
+                UserId = user.UserId,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Gender = user.Gender,
+                City = user.City,
+                Region = user.Region,
+                Country = user.Country,
+                PhotoUrl = user.PhotoUrl,
+                DefaultActivityType = ((ActivityTypeEnum)(user.DefaultActivityTypeId ?? (byte)ActivityTypeEnum.Ski)).ToString(),
+                Seasons = activities
+                    .GroupBy(a => Season.FromDate(a.StartDateTime))
+                    .Select(s => new SeasonSummaryModel
+                    {
+                        SeasonName = s.Key.Name,
+                        SkiDays = s.Count(),
+                        SkiDistanceMeters = s.Sum(a => a.SkiDistanceMeters),
+                        SkiVerticalMeters = s.Sum(a => a.SkiVerticalMeters),
+                    })
+                    .ToList()
+            };
+        }
     }
 }

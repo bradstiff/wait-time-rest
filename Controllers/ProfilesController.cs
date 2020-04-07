@@ -44,20 +44,8 @@ namespace wait_time.Controllers
             try
             {
                 var user = await _context.Users.SingleAsync(a => a.UserId == userId);
-                var response = new ProfileResponseModel
-                {
-                    UserId = user.UserId,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Email = user.Email,
-                    Gender = user.Gender,
-                    City = user.City,
-                    Region = user.Region,
-                    Country = user.Country,
-                    PhotoUrl = user.PhotoUrl,
-                    DefaultActivityType = ((ActivityTypeEnum)(user.DefaultActivityTypeId ?? (byte)ActivityTypeEnum.Ski)).ToString(),
-                };
-
+                var activities = await _context.Activities.Where(a => a.UserId == userId).ToListAsync();
+                var response = Responses.Profile(user, activities);
                 return Ok(response);
             }
             catch (Exception e)

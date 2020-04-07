@@ -17,5 +17,6 @@ namespace WaitTime.Models
         public string Country { get; set; }
         public string PhotoUrl { get; set; }
         public string DefaultActivityType { get; set; }
+        public IList<SeasonSummaryModel> Seasons { get; set; }
     }
 }
