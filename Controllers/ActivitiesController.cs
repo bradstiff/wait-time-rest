@@ -107,67 +107,59 @@ namespace wait_time.Controllers
             {
                 var sourceTypeID = Enum.Parse<ActivitySourceTypeEnum>(model.Source, true);
 
-                foreach (var activityBatches in model.Batches.GroupBy(b => b.ActivityId))
+                //get or create activity
+                var activity = await _context.Activities.SingleOrDefaultAsync(a => a.ActivityId == model.ActivityId);
+                if (activity == null)
                 {
-                    var activityId = activityBatches.Key;
-
-                    //get or create activity
-                    var activity = await _context.Activities.SingleOrDefaultAsync(a => a.ActivityId == activityId);
-                    if (activity == null)
+                    activity = new WaitTime.Entities.Activity
                     {
-                        activity = new WaitTime.Entities.Activity
-                        {
-                            ActivityId = activityId,
-                            UserId = this.UserId,
-                            SourceTypeId = (byte)sourceTypeID,
-                        };
-                        _context.Activities.Add(activity);
-                    }
-
-                    foreach (var syncBatch in activityBatches)
-                    {
-                        var batch = await _context.ActivitySyncBatches.SingleOrDefaultAsync(b => b.ActivitySyncBatchId == syncBatch.ActivitySyncBatchId);
-                        if (batch != null)
-                        {
-                            //batch already saved
-                            continue;
-                        }
-
-                        var array = syncBatch.LocationsArray;
-                        if (array.GetLength(1) != 10)
-                        {
-                            var error = $"Activity {syncBatch.ActivityId}, Batch {syncBatch.BatchNbr} for User {UserId}: Locations array has the wrong number of columns. Expected 10 columns, found {array.GetLength(1)}.";
-                            Console.WriteLine(error);
-                            throw new ArgumentOutOfRangeException(nameof(model), error);
-                        }
-
-                        foreach(var location in Enumerable
-                            .Range(0, array.GetLength(0))
-                            .Select(row => new ActivityLocation
-                            {
-                                Latitude = (double)(array[row, 0] ?? 0),
-                                Longitude = (double)(array[row, 1] ?? 0),
-                                Accuracy = (float)(array[row, 2] ?? 0),
-                                Altitude = (float)(array[row, 3] ?? 0),
-                                AltitudeAccuracy = (float)(array[row, 4]),
-                                Bearing = (float)(array[row, 5] ?? 0),
-                                BearingAccuracy = (float)(array[row, 6]),
-                                Speed = (float)(array[row, 7] ?? 0),
-                                SpeedAccuracy = (float)(array[row, 8] ?? 0),
-                                Timestamp = (double)(array[row, 9] ?? 0),
-                            }))
-                        {
-                            activity.Locations.Add(location);
-                        }
-
-                        batch = new ActivitySyncBatch
-                        {
-                            ActivitySyncBatchId = syncBatch.ActivitySyncBatchId,
-                            BatchNbr = syncBatch.BatchNbr,
-                        };
-                        activity.Batches.Add(batch);
-                    }
+                        ActivityId = model.ActivityId,
+                        UserId = this.UserId,
+                        SourceTypeId = (byte)sourceTypeID,
+                    };
+                    _context.Activities.Add(activity);
                 }
+
+                var batch = await _context.ActivitySyncBatches.SingleOrDefaultAsync(b => b.ActivitySyncBatchId == model.ActivitySyncBatchId);
+                if (batch != null)
+                {
+                    //batch already saved
+                    return Ok(new SuccessResponse());
+                }
+
+                var array = model.LocationsArray;
+                if (array.GetLength(1) != 10)
+                {
+                    var error = $"Activity {model.ActivityId}, Batch {model.BatchNbr} for User {UserId}: Locations array has the wrong number of columns. Expected 10 columns, found {array.GetLength(1)}.";
+                    Console.WriteLine(error);
+                    throw new ArgumentOutOfRangeException(nameof(model), error);
+                }
+
+                foreach(var location in Enumerable
+                    .Range(0, array.GetLength(0))
+                    .Select(row => new ActivityLocation
+                    {
+                        Latitude = (double)(array[row, 0] ?? 0),
+                        Longitude = (double)(array[row, 1] ?? 0),
+                        Accuracy = (float)(array[row, 2] ?? 0),
+                        Altitude = (float)(array[row, 3] ?? 0),
+                        AltitudeAccuracy = (float)(array[row, 4]),
+                        Bearing = (float)(array[row, 5] ?? 0),
+                        BearingAccuracy = (float)(array[row, 6]),
+                        Speed = (float)(array[row, 7] ?? 0),
+                        SpeedAccuracy = (float)(array[row, 8] ?? 0),
+                        Timestamp = (double)(array[row, 9] ?? 0),
+                    }))
+                {
+                    activity.Locations.Add(location);
+                }
+
+                batch = new ActivitySyncBatch
+                {
+                    ActivitySyncBatchId = model.ActivitySyncBatchId,
+                    BatchNbr = model.BatchNbr,
+                };
+                activity.Batches.Add(batch);
 
                 await _context.SaveChangesAsync();
                 return Ok(new SuccessResponse());
