@@ -96,24 +96,24 @@ namespace wait_time.Controllers
 
         [HttpPut]
         [ValidateModel]
-        [Route("sync")]
+        [Route("{activityId}/data")]
         [Authorize]
         [ProducesResponseType(typeof(SuccessResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> SyncUserActivityBatches([FromBody] DataSyncRequestModel model)
+        public async Task<IActionResult> SaveActivityData(Guid activityId, [FromBody] DataSyncRequestModel model)
         {
             try
             {
                 var sourceTypeID = Enum.Parse<ActivitySourceTypeEnum>(model.Source, true);
 
                 //get or create activity
-                var activity = await _context.Activities.SingleOrDefaultAsync(a => a.ActivityId == model.ActivityId);
+                var activity = await _context.Activities.SingleOrDefaultAsync(a => a.ActivityId == activityId);
                 if (activity == null)
                 {
                     activity = new WaitTime.Entities.Activity
                     {
-                        ActivityId = model.ActivityId,
+                        ActivityId = activityId,
                         UserId = this.UserId,
                         SourceTypeId = (byte)sourceTypeID,
                     };
@@ -130,7 +130,7 @@ namespace wait_time.Controllers
                 var array = model.LocationsArray;
                 if (array.GetLength(1) != 10)
                 {
-                    var error = $"Activity {model.ActivityId}, Batch {model.BatchNbr} for User {UserId}: Locations array has the wrong number of columns. Expected 10 columns, found {array.GetLength(1)}.";
+                    var error = $"Activity {activityId}, Batch {model.BatchNbr} for User {UserId}: Locations array has the wrong number of columns. Expected 10 columns, found {array.GetLength(1)}.";
                     Console.WriteLine(error);
                     throw new ArgumentOutOfRangeException(nameof(model), error);
                 }
