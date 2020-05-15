@@ -155,6 +155,15 @@ namespace WaitTime.Models
                         SkiVerticalMeters = s.Sum(a => a.SkiVerticalMeters),
                         MaxSpeedMps = s.Max(a => a.MaxSpeedMps),
                     })
+                    .Append(new SeasonSummaryModel
+                    {
+                        Year = null,
+                        Name = "All Time",
+                        SkiDays = activities.Count(),
+                        SkiDistanceMeters = activities.Sum(a => a.SkiDistanceMeters),
+                        SkiVerticalMeters = activities.Sum(a => a.SkiVerticalMeters),
+                        MaxSpeedMps = activities.Max(a => a.MaxSpeedMps),
+                    })
                     .ToList()
             };
         }
