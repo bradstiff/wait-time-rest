@@ -18,11 +18,11 @@ namespace WaitTime.Components
 
         public Season(int startYear)
         {
-            Id = startYear;
+            Year = startYear;
         }
 
-        public int Id { get; set; }
-        public string Name => $"{Id} - {Id + 1}";
+        public int Year { get; set; }
+        public string Name => $"{Year} - {Year + 1}";
 
         public bool Contains(Activity activity)
         {

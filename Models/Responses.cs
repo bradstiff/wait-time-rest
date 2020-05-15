@@ -148,7 +148,8 @@ namespace WaitTime.Models
                     .OrderByDescending(s => s.Key)
                     .Select(s => new SeasonSummaryModel
                     {
-                        SeasonName = s.Key.Name,
+                        Year = s.Key.Year,
+                        Name = s.Key.Name,
                         SkiDays = s.Count(),
                         SkiDistanceMeters = s.Sum(a => a.SkiDistanceMeters),
                         SkiVerticalMeters = s.Sum(a => a.SkiVerticalMeters),
