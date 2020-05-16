@@ -15,6 +15,7 @@ namespace WaitTime.Models
         public int FavoriteLiftUplifts { get; set; }
         public int Days { get; set; }
         public int Resorts { get; set; }
+        public int Runs { get; set; }
         public int SkiTimeSeconds { get; set; }
         public float SkiDistanceMeters { get; set; }
         public int SkiVerticalMeters { get; set; }

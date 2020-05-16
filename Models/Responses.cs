@@ -158,6 +158,7 @@ namespace WaitTime.Models
             {
                 Days = activities.Count(),
                 Resorts = 1,
+                Runs = activities.SelectMany(a => a.Segments.Where(s => s.IsRun)).Count(),
                 SkiTimeSeconds = activities.Sum(a => a.SkiTimeSeconds),
                 SkiDistanceMeters = activities.Sum(a => a.SkiDistanceMeters),
                 SkiVerticalMeters = activities.Sum(a => a.SkiVerticalMeters),
