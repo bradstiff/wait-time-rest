@@ -146,25 +146,53 @@ namespace WaitTime.Models
                 Seasons = activities
                     .GroupBy(a => Season.FromDate(a.StartDateTime))
                     .OrderByDescending(s => s.Key)
-                    .Select(s => new SeasonSummaryModel
-                    {
-                        Year = s.Key.Year,
-                        Name = s.Key.Name,
-                        SkiDays = s.Count(),
-                        SkiDistanceMeters = s.Sum(a => a.SkiDistanceMeters),
-                        SkiVerticalMeters = s.Sum(a => a.SkiVerticalMeters),
-                        MaxSpeedMps = s.Max(a => a.MaxSpeedMps),
-                    })
-                    .Append(new SeasonSummaryModel
-                    {
-                        Year = null,
-                        Name = "All Time",
-                        SkiDays = activities.Count(),
-                        SkiDistanceMeters = activities.Sum(a => a.SkiDistanceMeters),
-                        SkiVerticalMeters = activities.Sum(a => a.SkiVerticalMeters),
-                        MaxSpeedMps = activities.Max(a => a.MaxSpeedMps),
-                    })
+                    .Select(s => SeasonSummary(s.Key.Year, s.Key.Name, s.ToList()))
+                    .Append(SeasonSummary(null, "All Time", activities))
                     .ToList()
+            };
+        }
+
+        private static SeasonSummaryModel SeasonSummary(int? year, string seasonName, List<Entities.Activity> activities)
+        {
+            var stats = new
+            {
+                Days = activities.Count(),
+                Resorts = 1,
+                SkiTimeSeconds = activities.Sum(a => a.SkiTimeSeconds),
+                SkiDistanceMeters = activities.Sum(a => a.SkiDistanceMeters),
+                SkiVerticalMeters = activities.Sum(a => a.SkiVerticalMeters),
+                MaxSpeedMps = activities.Max(a => a.MaxSpeedMps),
+                MaxAltitudeMeters = activities.Max(a => a.MaxAltitudeMeters),
+                LongestRunMeters = activities.SelectMany(a => a.Segments.Where(s => s.IsRun)).Max(r => r.DistanceMeters),
+                TallestRunMeters = activities.SelectMany(a => a.Segments.Where(s => s.IsRun)).Max(r => -r.VerticalMeters)
+            };
+            var favoriteResort = new
+            {
+                Name = "Steamboat Ski Resort",
+                Count = activities.Count() - 2
+            };
+            var favoriteLift = new
+            {
+                Name = "Storm Peak Express",
+                Count = 123
+            };
+            return new SeasonSummaryModel
+            {
+                Year = year,
+                Name = seasonName,
+                FavoriteResort = favoriteResort.Name,
+                FavoriteResortDays = favoriteResort.Count,
+                FavoriteLift = favoriteLift.Name,
+                FavoriteLiftUplifts = favoriteLift.Count,
+                Days = stats.Days,
+                Resorts = stats.Resorts,
+                SkiTimeSeconds = stats.SkiTimeSeconds,
+                SkiDistanceMeters = stats.SkiDistanceMeters,
+                SkiVerticalMeters = stats.SkiVerticalMeters,
+                MaxSpeedMps = stats.MaxSpeedMps,
+                MaxAltitudeMeters = stats.MaxAltitudeMeters,
+                LongestRunMeters = stats.LongestRunMeters,
+                TallestRunMeters = stats.TallestRunMeters
             };
         }
     }

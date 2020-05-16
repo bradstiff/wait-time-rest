@@ -44,7 +44,7 @@ namespace wait_time.Controllers
             try
             {
                 var user = await _context.Users.SingleAsync(a => a.UserId == userId);
-                var activities = await _context.Activities.Where(a => a.UserId == userId).ToListAsync();
+                var activities = await _context.Activities.Where(a => a.UserId == userId).Include(a => a.Segments).ToListAsync();
                 var response = Responses.Profile(user, activities);
                 return Ok(response);
             }
