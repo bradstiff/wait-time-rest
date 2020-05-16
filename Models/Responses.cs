@@ -146,7 +146,7 @@ namespace WaitTime.Models
                 Seasons = activities
                     .GroupBy(a => Season.FromDate(a.StartDateTime))
                     .OrderByDescending(s => s.Key)
-                    .Select(s => SeasonSummary(s.Key.Year, s.Key.Name, s.ToList()))
+                    .Select(s => SeasonSummary(s.Key.Year, $"{s.Key.Name} Season", s.ToList()))
                     .Append(SeasonSummary(null, "All Time", activities))
                     .ToList()
             };
