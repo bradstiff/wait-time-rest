@@ -187,6 +187,7 @@ namespace WaitTime.Models
                 FavoriteLiftUplifts = favoriteLift.Count,
                 Days = stats.Days,
                 Resorts = stats.Resorts,
+                Runs = stats.Runs,
                 SkiTimeSeconds = stats.SkiTimeSeconds,
                 SkiDistanceMeters = stats.SkiDistanceMeters,
                 SkiVerticalMeters = stats.SkiVerticalMeters,
