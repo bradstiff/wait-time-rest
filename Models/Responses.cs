@@ -131,6 +131,18 @@ namespace WaitTime.Models
 
         public static ProfileResponseModel Profile(AppUser user, List<Entities.Activity> activities)
         {
+            IEnumerable<SeasonSummaryModel> getSeasons()
+            {
+                var seasons = activities
+                        .GroupBy(a => Season.FromDate(a.StartDateTime))
+                        .OrderByDescending(s => s.Key)
+                        .Select(s => SeasonSummary(s.Key.Year, $"{s.Key.Name} Season", s.ToList()))
+                        .ToList();
+                return seasons.Count == 1
+                    ? seasons
+                    : seasons.Append(SeasonSummary(null, "All Time", activities));
+            }
+
             return new ProfileResponseModel
             {
                 UserId = user.UserId,
@@ -143,12 +155,7 @@ namespace WaitTime.Models
                 Country = user.Country,
                 PhotoUrl = user.PhotoUrl,
                 DefaultActivityType = ((ActivityTypeEnum)(user.DefaultActivityTypeId ?? (byte)ActivityTypeEnum.Ski)).ToString(),
-                Seasons = activities
-                    .GroupBy(a => Season.FromDate(a.StartDateTime))
-                    .OrderByDescending(s => s.Key)
-                    .Select(s => SeasonSummary(s.Key.Year, $"{s.Key.Name} Season", s.ToList()))
-                    .Append(SeasonSummary(null, "All Time", activities))
-                    .ToList()
+                Seasons = getSeasons().ToList()
             };
         }
 
