@@ -129,18 +129,19 @@ namespace WaitTime.Models
             };
         }
 
-        public static ProfileResponseModel Profile(AppUser user, List<Entities.Activity> activities)
+        public static ProfileResponseModel Profile(AppUser user, IEnumerable<Entities.Activity> activities)
         {
             IEnumerable<SeasonSummaryModel> getSeasons()
             {
                 var seasons = activities
+                        .Where(a => a.StartDateTime > DateTimeOffset.MinValue)
                         .GroupBy(a => Season.FromDate(a.StartDateTime))
                         .OrderByDescending(s => s.Key)
                         .Select(s => SeasonSummary(s.Key.Year, $"{s.Key.Name} Season", s.ToList()))
                         .ToList();
-                return seasons.Count == 1
-                    ? seasons
-                    : seasons.Append(SeasonSummary(null, "All Time", activities));
+                return seasons.Count > 1
+                    ? seasons.Append(SeasonSummary(null, "All Time", activities))
+                    : seasons;
             }
 
             return new ProfileResponseModel
@@ -159,7 +160,7 @@ namespace WaitTime.Models
             };
         }
 
-        private static SeasonSummaryModel SeasonSummary(int? year, string seasonName, List<Entities.Activity> activities)
+        private static SeasonSummaryModel SeasonSummary(int? year, string seasonName, IEnumerable<Entities.Activity> activities)
         {
             var stats = new
             {
@@ -171,8 +172,8 @@ namespace WaitTime.Models
                 SkiVerticalMeters = activities.Sum(a => a.SkiVerticalMeters),
                 MaxSpeedMps = activities.Max(a => a.MaxSpeedMps),
                 MaxAltitudeMeters = activities.Max(a => a.MaxAltitudeMeters),
-                LongestRunMeters = activities.SelectMany(a => a.Segments.Where(s => s.IsRun)).Max(r => r.DistanceMeters),
-                TallestRunMeters = activities.SelectMany(a => a.Segments.Where(s => s.IsRun)).Max(r => -r.VerticalMeters)
+                LongestRunMeters = activities.SelectMany(a => a.Segments.Where(s => s.IsRun).Select(r => r.DistanceMeters)).DefaultIfEmpty().Max(), //avoids InvalidOperationException if no segments
+                TallestRunMeters = activities.SelectMany(a => a.Segments.Where(s => s.IsRun).Select(r => -r.VerticalMeters)).DefaultIfEmpty().Max()
             };
             var favoriteResort = new
             {
