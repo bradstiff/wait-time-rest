@@ -101,7 +101,7 @@ namespace wait_time.Controllers
         [ProducesResponseType(typeof(SuccessResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> SaveActivityData(Guid activityId, [FromBody] DataSyncRequestModel model)
+        public async Task<IActionResult> SaveActivityData(Guid activityId, [FromBody] ActivitySaveDataRequestModel model)
         {
             try
             {
@@ -203,27 +203,27 @@ namespace wait_time.Controllers
                 activity.AverageSpeedMps = Convert.ToSingle(model.AverageSpeedMps);
                 activity.MaxAltitudeMeters = Convert.ToInt32(model.MaxAltitudeMeters);
                 activity.MaxGradeDegrees = Convert.ToSingle(model.MaxGradeDegrees);
-                activity.RunsCount = model.RunsCount;
+                activity.RunsCount = model.RunsCount ?? 0;
                 activity.UserId = this.UserId;
                 activity.SourceTypeId = (byte)Enum.Parse<ActivitySourceTypeEnum>(model.Source, true);
                 activity.Timestamp = model.Timestamp;
 
-                activity.Segments = model
-                    .Segments?.Select(s => new ActivitySegment
+                activity.Segments = model.Segments?
+                    .Select(s => new ActivitySegment
                     {
                         Name = s.Name,
-                        StartTimestamp = s.StartTimestamp,
-                        EndTimestamp = s.EndTimestamp,
-                        TotalTimeSeconds = s.TotalTimeSeconds,
-                        MovingTimeSeconds = s.MovingTimeSeconds,
-                        VerticalMeters = s.VerticalMeters,
-                        StartAltitude = s.StartAltitude,
-                        EndAltitude = s.EndAltitude,
-                        DistanceMeters  = s.DistanceMeters,
-                        MaxSpeedMps = s.MaxSpeedMps,
-                        AverageSpeedMps = s.AverageSpeedMps,
-                        MaxGradeDegrees = s.MaxGradeDegrees,
-                        IsRun = s.IsRun
+                        StartTimestamp = s.StartTimestamp ?? 0,
+                        EndTimestamp = s.EndTimestamp ?? 0,
+                        TotalTimeSeconds = Convert.ToInt32(s.TotalTimeSeconds),
+                        MovingTimeSeconds = Convert.ToInt32(s.MovingTimeSeconds),
+                        VerticalMeters = Convert.ToInt32(s.VerticalMeters),
+                        StartAltitude = Convert.ToSingle(s.StartAltitude),
+                        EndAltitude = Convert.ToSingle(s.EndAltitude),
+                        DistanceMeters  = Convert.ToSingle(s.DistanceMeters),
+                        MaxSpeedMps = Convert.ToSingle(s.MaxSpeedMps),
+                        AverageSpeedMps = Convert.ToSingle(s.AverageSpeedMps),
+                        MaxGradeDegrees = Convert.ToSingle(s.MaxGradeDegrees),
+                        IsRun = s.IsRun ?? false
                     })
                     .ToList();
 
