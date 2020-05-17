@@ -85,7 +85,7 @@ namespace wait_time.Controllers
                     await _context.SaveChangesAsync();
                 }
 
-                var response = Responses.Profile(user, default(IEnumerable<Activity>));
+                var response = Responses.Profile(user, Enumerable.Empty<Activity>());
                 return Ok(response);
             }
             catch (Exception e)
